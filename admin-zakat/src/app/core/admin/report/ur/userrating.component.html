@@ -1,0 +1,203 @@
+<div class="header pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-6 col-7">
+          <h6 class="h2 text-dark d-inline-block mb-0">Reporting</h6>
+
+          <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0)">
+                  <i class="fas fa-chart-bar text-dark"> </i>
+                </a>
+              </li>
+              <li aria-current="page" class="breadcrumb-item active">
+                User Ratings
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 col-lg-5">
+              <div class="form-group">
+                <label class="form-control-label">Date range</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"
+                      ><i class="far fa-calendar-alt"></i
+                    ></span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    bsDaterangepicker
+                    [bsConfig]="bsDPConfig"
+                    [(ngModel)]="dateRange"
+                    placeholder="Date range"
+                    name="bsDaterangepicker"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-2 d-flex align-items-center">
+              <button class="btn btn-default" (click)="getData()" type="button">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-secondary">
+          <h3 class="m-0">User Ratings</h3>
+
+          <div class="text-right">
+            <button class="btn btn-lg btn-danger" (click)="exportPdf()">
+              PDF
+            </button>
+            <button class="btn btn-lg btn-success" (click)="exportExcel()">
+              Excel
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <ngx-datatable
+            class="bootstrap selection-cell"
+            [columnMode]="'force'"
+            [headerHeight]="50"
+            [footerHeight]="50"
+            [rowHeight]="'auto'"
+            [limit]="10"
+            [rows]="tableTemp"
+          >
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="created_at"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Date</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.created_at }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="feedback"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Feedback</span>
+              </ng-template>
+
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.feedback }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="star">
+              <ng-template ngx-datatable-header-template>
+                <span>Rating</span>
+              </ng-template>
+
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.star }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="name">
+              <ng-template ngx-datatable-header-template>
+                <span>Name</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.name }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="phonenumber"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Phone Number</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.phonenumber }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="email">
+              <ng-template ngx-datatable-header-template>
+                <span>Email</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.email }}
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-fussion"
+  [fullScreen]="true"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>
+
+<div class="table" id="reportTable" #reportTable [hidden]="!isHidden">
+  <table class="table table-responsive table-flush">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Feedback</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of tableTemp">
+        <td>
+          {{ row.created_at }}
+        </td>
+        <td>
+          {{ row.name }}
+        </td>
+        <td>
+          {{ row.email }}
+        </td>
+        <td>
+          {{ row.phonenumber }}
+        </td>
+        <td>
+          {{ row.feedback }}
+        </td>
+        <td>
+          {{ row.star }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,335 @@
+<div class="header pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-6 col-7">
+          <h6 class="h2 text-dark d-inline-block mb-0">Reporting</h6>
+
+          <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0)">
+                  <i class="fas fa-chart-bar text-dark"> </i>
+                </a>
+              </li>
+              <li aria-current="page" class="breadcrumb-item active">
+                Live Chat History
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 col-lg-5">
+              <div class="form-group">
+                <label class="form-control-label">Date range</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"
+                      ><i class="far fa-calendar-alt"></i
+                    ></span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    bsDaterangepicker
+                    [bsConfig]="bsDPConfig"
+                    [(ngModel)]="dateRange"
+                    placeholder="Date range"
+                    name="bsDaterangepicker"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-2 d-flex align-items-center">
+              <button class="btn btn-default" (click)="getData()" type="button">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-secondary">
+          <h3 class="m-0">Live Chat History</h3>
+
+          <div class="text-right">
+            <button class="btn btn-lg btn-danger" (click)="exportPdf('main')">
+              PDF
+            </button>
+            <button
+              class="btn btn-lg btn-success"
+              (click)="exportExcel('reportTableMain')"
+            >
+              Excel
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <ngx-datatable
+            class="bootstrap selection-cell"
+            [columnMode]="'force'"
+            [headerHeight]="50"
+            [footerHeight]="50"
+            [rowHeight]="'auto'"
+            [limit]="10"
+            [rows]="tableTemp"
+          >
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="created_at"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Accepted Time</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.attendtime }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="name">
+              <ng-template ngx-datatable-header-template>
+                <span>Name</span>
+              </ng-template>
+
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.name }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="phonenumber"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Phone Number</span>
+              </ng-template>
+
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.phonenumber }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="email">
+              <ng-template ngx-datatable-header-template>
+                <span>Email</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.email }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="emel">
+              <ng-template ngx-datatable-header-template>
+                <span>Agent Email</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.emel }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="languageOfChoice"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Chosen Language</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.languageOfChoice }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column>
+              <ng-template ngx-datatable-header-template>
+                <span>Action</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <a style="cursor: pointer">
+                  <button
+                    class="btn btn-sm btn-info"
+                    (click)="openModal(chatModal, row.id)"
+                  >
+                    Convo
+                  </button> </a
+                >&nbsp;&nbsp;
+                <a style="cursor: pointer">
+                  <button
+                    class="btn btn-sm btn-success"
+                    (click)="exportExcelSub(row.id, row.email)"
+                  >
+                    Excel
+                  </button> </a
+                >&nbsp;&nbsp;
+                <a style="cursor: pointer">
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="exportPdf('sub', row.id, row.email)"
+                  >
+                    PDF
+                  </button>
+                </a>
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #chatModal>
+  <div class="modal-header bg-primary">
+    <h6 class="modal-title text-white my-auto" id="modal-title-default">
+      Chat History
+    </h6>
+
+    <button
+      aria-label="Close"
+      class="close"
+      data-dismiss="modal"
+      type="button"
+      (click)="closeModal()"
+    >
+      <span class="text-white my-auto"> × </span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <ngx-datatable
+      class="bootstrap selection-cell"
+      [columnMode]="'force'"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      [rowHeight]="'auto'"
+      [rows]="table2"
+    >
+      <ngx-datatable-column [width]="80" [resizeable]="true" prop="created_at">
+        <ng-template ngx-datatable-header-template>
+          <span>Sent Time</span>
+        </ng-template>
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.created_at }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [width]="80" [resizeable]="true" prop="message">
+        <ng-template ngx-datatable-header-template>
+          <span>Client</span>
+        </ng-template>
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.clientId == clientid ? row.message : "" }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [width]="80" [resizeable]="true" prop="agentMsg">
+        <ng-template ngx-datatable-header-template>
+          <span>Agent</span>
+        </ng-template>
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.agentMsg === null ? "" : row.agentMsg }}
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      class="btn btn-outline-danger ml-auto"
+      data-dismiss="modal"
+      type="button"
+      (click)="closeModal()"
+    >
+      Close
+    </button>
+  </div>
+</ng-template>
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-fussion"
+  [fullScreen]="true"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>
+
+<div class="table" id="reportTableMain" #reportTable [hidden]="!isHidden">
+  <table class="table table-responsive table-flush">
+    <thead>
+      <tr>
+        <th>Accepted Date</th>
+        <th>Accepted Time</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Agent Email</th>
+        <th>Chosen Language</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of tableTemp">
+        <td>
+          {{ row.attendtime }}
+        </td>
+        <td>
+          {{ row.attendtime.split(" ")[1] }}
+        </td>
+        <td>
+          {{ row.name }}
+        </td>
+        <td>
+          {{ row.email }}
+        </td>
+        <td>
+          {{ row.phonenumber }}
+        </td>
+        <td>
+          {{ row.emel }}
+        </td>
+        <td>
+          {{ row.languageOfChoice }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table" id="reportTableChat" #reportTable [hidden]="!isHidden">
+  <table class="table table-responsive table-flush">
+    <thead>
+      <tr>
+        <th>Sent Date</th>
+        <th>Sent Time</th>
+        <th>Client</th>
+        <th>Agent</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of table2">
+        <td>
+          {{ row.created_at }}
+        </td>
+        <td>
+          {{ row.created_at.split(" ")[1] }}
+        </td>
+        <td>
+          {{ row.clientId == clientid ? row.message : "" }}
+        </td>
+        <td>
+          {{ row.agentMsg === null ? "" : row.agentMsg }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

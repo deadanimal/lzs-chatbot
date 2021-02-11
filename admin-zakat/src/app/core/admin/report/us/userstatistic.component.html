@@ -1,0 +1,255 @@
+<div class="header pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-6 col-7">
+          <h6 class="h2 text-dark d-inline-block mb-0">Reporting</h6>
+
+          <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0)">
+                  <i class="fas fa-chart-bar text-dark"> </i>
+                </a>
+              </li>
+              <li aria-current="page" class="breadcrumb-item active">
+                User Statistic
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 col-lg-5">
+              <div class="form-group">
+                <label class="form-control-label">Date range</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"
+                      ><i class="far fa-calendar-alt"></i
+                    ></span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    bsDaterangepicker
+                    [bsConfig]="bsDPConfig"
+                    [(ngModel)]="dateRange"
+                    placeholder="Date range"
+                    name="bsDaterangepicker"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-2 d-flex align-items-center">
+              <button class="btn btn-default" (click)="getData()" type="button">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-secondary">
+          <h3 class="m-0">User Statistic</h3>
+
+          <div class="text-right">
+            <button class="btn btn-lg btn-danger" (click)="exportPdf()">
+              PDF
+            </button>
+            <button class="btn btn-lg btn-success" (click)="exportExcel()">
+              Excel
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <ngx-datatable
+            class="bootstrap selection-cell"
+            [columnMode]="'force'"
+            [headerHeight]="50"
+            [footerHeight]="50"
+            [rowHeight]="'auto'"
+            [limit]="10"
+            [rows]="tableTemp"
+          >
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="date">
+              <ng-template ngx-datatable-header-template>
+                <span>Date</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.date }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="totalUser"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Total User</span>
+              </ng-template>
+
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.totalUser }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="averageSpent"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Average Time Spent(sec)</span>
+              </ng-template>
+
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.averageSpent }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="averageWait"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Average Waiting Time(sec)</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.averageWait }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column
+              [width]="80"
+              [resizeable]="true"
+              prop="averageRating"
+            >
+              <ng-template ngx-datatable-header-template>
+                <span>Average Rating</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.averageRating }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="top_1">
+              <ng-template ngx-datatable-header-template>
+                <span>Top 1</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.top_1 }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="top_2">
+              <ng-template ngx-datatable-header-template>
+                <span>Top 2</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.top_2 }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="top_3">
+              <ng-template ngx-datatable-header-template>
+                <span>Top 3</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.top_3 }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="top_4">
+              <ng-template ngx-datatable-header-template>
+                <span>Top 4</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.top_4 }}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="80" [resizeable]="true" prop="top_5">
+              <ng-template ngx-datatable-header-template>
+                <span>Top 5</span>
+              </ng-template>
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.top_5 }}
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-fussion"
+  [fullScreen]="true"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>
+
+<div class="table" id="reportTable" #reportTable [hidden]="!isHidden">
+  <table class="table table-responsive table-flush">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Total User</th>
+        <th>Average Time Spent(sec)</th>
+        <th>Average Waiting Time(sec)</th>
+        <th>Average Rating</th>
+        <th>Top 1</th>
+        <th>Top 2</th>
+        <th>Top 3</th>
+        <th>Top 4</th>
+        <th>Top 5</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of tableTemp">
+        <td>
+          {{ row.date }}
+        </td>
+        <td>
+          {{ row.totalUser }}
+        </td>
+        <td>
+          {{ row.averageSpent }}
+        </td>
+        <td>
+          {{ row.averageWait }}
+        </td>
+        <td>
+          {{ row.averageRating }}
+        </td>
+        <td>
+          {{ row.top_1 }}
+        </td>
+        <td>
+          {{ row.top_2 }}
+        </td>
+        <td>
+          {{ row.top_3 }}
+        </td>
+        <td>
+          {{ row.top_4 }}
+        </td>
+        <td>
+          {{ row.top_5 }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

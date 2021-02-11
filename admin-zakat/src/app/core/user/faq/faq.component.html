@@ -1,0 +1,107 @@
+<div class="header pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-6 col-7">
+          <h6 class="h2 text-dark d-inline-block mb-0">Frequently Asked Question (FAQ)</h6>
+
+          <nav aria-label="breadcrumb" class=" d-none d-md-inline-block ml-md-4">
+            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+              <li class=" breadcrumb-item">
+                <a href="javascript:void(0)"> <i class="fas fa-question-circle text-dark"> </i> </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-secondary">
+          <div class="form-group">
+            <label class="form-control-label">Choose by Categories</label>
+            <select class="form-control custom-select" #mySelect>
+              <option hidden selected value="0">Please pick</option>
+              <option value="general">General</option>
+              <option value="account">Account and Billing</option>
+              <option value="owner">Owner/Tenant issues</option>
+              <option value="power">Power Quality</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card-body" *ngIf="mySelect.value==='general'">
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="text-default">Where is the TNB's Headquarters?</h4>
+              <p>TNB’s Headquarters is located in Bangsar, Kuala Lumpur. For full address, refer to our Contact Us page.
+              </p>
+            </div>
+            <div class="col-md-12">
+              <h4 class="text-default">Where can I find a list of TNB's subsidiaries?</h4>
+              <p>A complete list can be found at our Subsidiaries page.</p>
+            </div>
+            <div class="col-md-12">
+              <h4 class="text-default">What is TNB's fiscal year?</h4>
+              <p>TNB's fiscal year is from 1 January to 31 December.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body" *ngIf="mySelect.value==='account'">
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="text-default">How many days after receiving the bill, should payment be made?</h4>
+              <p>Payment should be made within 30 days from the date the bill is issued.</p>
+            </div>
+            <div class="col-md-12">
+              <h4 class="text-default">Can customers make partial payments of their bill?</h4>
+              <p>No. All bills must be paid in full.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body" *ngIf="mySelect.value==='owner'">
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="text-default">Some owners are left with hefty bills after their tenants have moved out. How can
+                owners protect their rights?</h4>
+              <ul>Property owners have two choices as below:
+                <li>In the situation before a new tenant moves in, property owners could do a Change of Tenancy making
+                  the tenant fully responsible for any delinquent account.
+                  However, owners will lose the right to instruct a disconnection to TNB in the event the tenant
+                  defaults in his monthly electricity bills</li>
+                <li>Owners could register with myTNB and would then be able to monitor their tenant’s monthly usage and
+                  payment pattern</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body" *ngIf="mySelect.value==='power'">
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="text-default">How is Power Quality measured?</h4>
+              <p>Power quality is generally measured by the shape of the voltage waveforms supplied at the customer's
+                meter.
+                The voltage waveforms may reduce, increase, fluctuate or distort due to controllable or uncontrollable
+                circumstances.</p>
+            </div>
+            <div class="col-md-12">
+              <h4 class="text-default">What kind of equipments can be affected by Power Quality problems?</h4>
+              <p>Any types of electrical equipments can be affected. Standard building systems such as lighting, HVAC
+                and communications equipments are frequently affected.
+                The most costly power quality problems often involve more sensitive high-tech equipments such as
+                computer controlled equipment and data systems.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

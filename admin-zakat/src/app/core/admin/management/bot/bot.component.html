@@ -1,0 +1,208 @@
+<div class="header pb-6">
+	<div class="container-fluid">
+		<div class="header-body">
+			<div class="row align-items-center py-4">
+				<div class="col-lg-6 col-7">
+					<h6 class="h2 text-dark d-inline-block mb-0">
+						Bot
+					</h6>
+
+					<nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+						<ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+							<li class="breadcrumb-item">
+								<a href="javascript:void(0)">
+									<i class="fas fa-align-left text-dark"></i>
+								</a>
+							</li>
+							<li class="breadcrumb-item">
+								<a href="javascript:void(0)" class="text-dark"> Management </a>
+							</li>
+							<li aria-current="page" class="breadcrumb-item active">
+								Bot
+							</li>
+						</ol>
+					</nav>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="container-fluid mt--6">
+	<div class="row">
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-secondary">
+					<div class="text-left">
+						<h3 class="m-0">Bot Conversations</h3>
+					</div>
+					<div class="text-right">
+						<button class="btn btn-lg btn-success" (click)="openModal(createModal, '')">Create Category</button>
+					</div>				
+				</div>
+				<ngx-datatable class="bootstrap selection-cell" [columnMode]="'force'"
+				[headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"			
+				[rows]="tableTemp" >
+				<ngx-datatable-column
+					[width]="80"				
+					[resizeable]="false"
+					prop="id"
+				>
+					<ng-template ngx-datatable-header-template>
+						<span>No.</span>
+					</ng-template>
+
+					<ng-template let-row="row" ngx-datatable-cell-template>
+						{{row.id}}
+					</ng-template>
+				</ngx-datatable-column>
+				<ngx-datatable-column
+				[width]="80"				
+				[resizeable]="false"
+				prop="category_name"
+			>
+				<ng-template ngx-datatable-header-template>
+					<span>Category Name</span>
+				</ng-template>
+
+				<ng-template let-row="row" ngx-datatable-cell-template>
+					{{row.category_name}}
+				</ng-template>
+			</ngx-datatable-column>
+			<ngx-datatable-column
+			[width]="80"				
+			[resizeable]="false"
+			prop="category_name"
+		>
+			<ng-template ngx-datatable-header-template>
+				<span>Sub Categories</span>
+			</ng-template>
+
+			<ng-template let-row="row.subCategories" ngx-datatable-cell-template>
+				<div *ngFor="let r of row; index as i;" style="margin-bottom: 10px;">
+					<button class="btn btn-sm btn-primary" (click)="navigateToSubPage(row[i].id)">{{row[i].sub_category_name}}</button>
+				<br>
+					</div>			
+			</ng-template>
+		</ngx-datatable-column>
+			<ngx-datatable-column>
+				<ng-template ngx-datatable-header-template>
+					<span>Action</span>
+				</ng-template>
+				<ng-template let-row="row" ngx-datatable-cell-template>
+					<a style="cursor: pointer" (click)="openModal(updateModal,row)">
+						<button class="btn btn-sm btn-info">
+							<i class="fas fa-edit"></i>
+						</button>
+					</a>&nbsp;&nbsp;<a style="cursor: pointer" >
+						<button class="btn btn-sm btn-primary" (click)="openModalSub(addSubModal,row)">
+							Add Sub
+						</button>
+					</a>&nbsp;&nbsp;
+					<a style="cursor: pointer" >
+						<button class="btn btn-sm btn-danger" [disabled]="row.delete == 0" (click)="delete(row)">
+							<i class="fas fa-trash"></i>
+						</button>
+					</a>					
+				</ng-template>
+			</ngx-datatable-column>
+				</ngx-datatable>				
+	</div>
+</div>
+		</div>
+		
+	</div>
+
+	<ng-template #createModal>
+		<div class="modal-header bg-primary">
+			<h6 class="modal-title text-white my-auto" id="modal-title-default">
+				Create Bot Category
+			</h6>
+	
+			<button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="closeModal()">
+				<span class="text-white my-auto"> × </span>
+			</button>
+		</div>
+	
+		<div class="modal-body">
+			<form [formGroup]="createForm">
+				<div class="form-group">
+					<label class="form-control-label">Category Name</label>
+					<input class="form-control" formControlName="name">
+				</div>
+			</form>
+		</div>
+	
+		<div class="modal-footer">
+			<button class="btn btn-success" type="button"  [disabled]="!createForm.valid" (click)="create()">
+				Create
+			</button>
+	
+			<button class="btn btn-outline-danger ml-auto" data-dismiss="modal" type="button" (click)="closeModal()">
+				Close
+			</button>
+		</div>
+	</ng-template>
+
+	<ng-template #addSubModal>
+		<div class="modal-header bg-primary">
+			<h6 class="modal-title text-white my-auto" id="modal-title-default">
+				Create Sub Category
+			</h6>
+	
+			<button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="closeModal()">
+				<span class="text-white my-auto"> × </span>
+			</button>
+		</div>
+	
+		<div class="modal-body">
+			<form [formGroup]="subForm">
+				<div class="form-group">
+					<label class="form-control-label">Sub Category Name</label>
+					<input class="form-control" formControlName="name">
+				</div>
+			</form>
+		</div>
+	
+		<div class="modal-footer">
+			<button class="btn btn-success" type="button"  [disabled]="!subForm.valid" (click)="addSub()">
+				Create
+			</button>
+	
+			<button class="btn btn-outline-danger ml-auto" data-dismiss="modal" type="button" (click)="closeModal()">
+				Close
+			</button>
+		</div>
+	</ng-template>
+
+	<ng-template #updateModal>
+		<div class="modal-header bg-primary">
+			<h6 class="modal-title text-white my-auto" id="modal-title-default">
+				Update Bot Category
+			</h6>
+	
+			<button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="closeModal()">
+				<span class="text-white my-auto"> × </span>
+			</button>
+		</div>
+	
+		<div class="modal-body">
+			<form [formGroup]="updateForm">
+				<div class="form-group">
+					<label class="form-control-label">Category Name</label>
+					<input class="form-control" formControlName="name">
+				</div>
+			</form>
+		</div>
+	
+		<div class="modal-footer">
+			<button class="btn btn-success" type="button"  [disabled]="!updateForm.valid" (click)="update()">
+				Update
+			</button>
+	
+			<button class="btn btn-outline-danger ml-auto" data-dismiss="modal" type="button" (click)="closeModal()">
+				Close
+			</button>
+		</div>
+	</ng-template>
