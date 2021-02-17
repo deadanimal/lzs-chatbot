@@ -14,6 +14,9 @@ class ReportScheduleController extends Controller
        $c=1;
        if ($c == 1){
 
+        DB::table('conversations')->whereNotNull("botMsg")->delete();
+        DB::table('admin_busy')->whereNotNull("userid")->delete();
+
         $start = Carbon::today();
        //$end = Carbon::today();
        $top_categories = array();

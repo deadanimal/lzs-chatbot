@@ -42,6 +42,7 @@
 						<button class="btn btn-lg btn-danger" [disabled]="deletable == 0" (click)="deleteMain()">Delete</button> &nbsp;&nbsp;
 						<button class="btn btn-lg btn-primary" [hidden]="has_question == 1" (click)="openAddSubModal(addSubModal)">Add Sub Category</button> &nbsp;&nbsp;
 						<button class="btn btn-lg btn-primary" [hidden]="has_sub == 1" (click)="openQModal(addQModal,'add','')">Add Question</button> &nbsp;&nbsp;
+						<button class="btn btn-lg btn-primary" [hidden]="has_sub == 1" (click)="openQModal(addZModal,'add','')">Add Ending</button> &nbsp;&nbsp;
 					</div>				
 				</div>
 				<ngx-datatable [hidden]="has_sub == 0" class="bootstrap selection-cell" [columnMode]="'force'"
@@ -112,6 +113,7 @@
 				</ng-template>
 			</ngx-datatable-column>
 				</ngx-datatable>
+				
 				<ngx-datatable [hidden]="has_question == 0" class="bootstrap selection-cell" [columnMode]="'force'"
 				[headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"			
 				[rows]="tableTemp2" [scrollbarH]="true">
@@ -203,7 +205,7 @@ prop="first"
 </ng-template>
 
 <ng-template let-row="row" ngx-datatable-cell-template>
-	{{row.first}}		
+	{{ row.first == 1 ? "Yes" : "No" }}		
 </ng-template>
 </ngx-datatable-column>
 <ngx-datatable-column
@@ -249,44 +251,91 @@ prop="logic"
 					</a>					
 				</ng-template>
 			</ngx-datatable-column>
-				</ngx-datatable>	
+				</ngx-datatable>
+
+				<ngx-datatable [hidden]="has_question == 0" class="bootstrap selection-cell" [columnMode]="'force'"
+				[headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"			
+				[rows]="tableTemp3" [scrollbarH]="true">
+				<ngx-datatable-column
+					[width]="80"				
+					[resizeable]="false"
+					prop="id"
+				>
+					<ng-template ngx-datatable-header-template>
+						<span>No.</span>
+					</ng-template>
+
+					<ng-template let-row="row" ngx-datatable-cell-template>
+						{{row.id}}
+					</ng-template>
+				</ngx-datatable-column>
+	
+			<ngx-datatable-column
+			[width]="80"				
+			[resizeable]="false"
+			prop="name"
+		>
+			<ng-template ngx-datatable-header-template>
+				<span>Name</span>
+			</ng-template>
+
+			<ng-template let-row="row" ngx-datatable-cell-template>
+				{{row.name}}		
+			</ng-template>
+		</ngx-datatable-column>
+		<ngx-datatable-column
+		[width]="80"				
+		[resizeable]="false"
+		prop="name_english"
+	>
+		<ng-template ngx-datatable-header-template>
+			<span>English Name</span>
+		</ng-template>
+
+		<ng-template let-row="row" ngx-datatable-cell-template>
+			{{row.name_english}}		
+		</ng-template>
+	</ngx-datatable-column>
+
+<ngx-datatable-column
+[width]="80"				
+[resizeable]="false"
+prop="link"
+>
+<ng-template ngx-datatable-header-template>
+	<span>Link</span>
+</ng-template>
+
+<ng-template let-row="row" ngx-datatable-cell-template>
+	{{row.link}}		
+</ng-template>
+</ngx-datatable-column>
+
+			<ngx-datatable-column [width]="230">
+				<ng-template ngx-datatable-header-template>
+					<span>Action</span>
+				</ng-template>
+				<ng-template let-row="row" ngx-datatable-cell-template>
+					<a style="cursor: pointer" (click)="editQModal3(editZModal,row)">
+						<button class="btn btn-sm btn-info">
+							<i class="fas fa-edit"></i>
+						</button>
+					</a>&nbsp;&nbsp;
+					<a style="cursor: pointer" >
+						<button class="btn btn-sm btn-danger" [disabled]="row.delete == 0" (click)="deleteQ2(row.id)">
+							<i class="fas fa-trash"></i>
+						</button>
+					</a>					
+				</ng-template>
+			</ngx-datatable-column>
+				</ngx-datatable>
+
 						
 	</div>
 </div>
 		</div>
 		
 	</div>
-	
-	<ng-template #createModal>
-		<div class="modal-header bg-primary">
-			<h6 class="modal-title text-white my-auto" id="modal-title-default">
-				Create Bot Category
-			</h6>
-	
-			<button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="closeModal()">
-				<span class="text-white my-auto"> × </span>
-			</button>
-		</div>
-	
-		<div class="modal-body">
-			<form [formGroup]="createForm">
-				<div class="form-group">
-					<label class="form-control-label">Category Name</label>
-					<input class="form-control" formControlName="name">
-				</div>
-			</form>
-		</div>
-	
-		<div class="modal-footer">
-			<button class="btn btn-success" type="button"  [disabled]="!createForm.valid" (click)="create()">
-				Create
-			</button>
-	
-			<button class="btn btn-outline-danger ml-auto" data-dismiss="modal" type="button" (click)="closeModal()">
-				Close
-			</button>
-		</div>
-	</ng-template>
 
 	<ng-template #addSubModal>
 		<div class="modal-header bg-primary">
@@ -304,6 +353,10 @@ prop="logic"
 				<div class="form-group">
 					<label class="form-control-label">Sub Category Name</label>
 					<input class="form-control" formControlName="name">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="englishname">
 				</div>
 			</form>
 		</div>
@@ -337,8 +390,16 @@ prop="logic"
 					<textarea rows="10" cols="50" class="form-control" formControlName="question"></textarea>
 				</div>
 				<div class="form-group">
+					<label class="form-control-label">English Q/S</label>
+					<textarea rows="10" cols="50" class="form-control" formControlName="questionenglish"></textarea>
+				</div>
+				<div class="form-group">
 					<label class="form-control-label">Button Name (if any)</label>
 					<input class="form-control" formControlName="buttonname">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">Button Name (english)</label>
+					<input class="form-control" formControlName="buttonenglish">
 				</div>
 				<div class="form-group">
 					<label class="form-control-label">Button Link (if has button)</label>
@@ -353,8 +414,10 @@ prop="logic"
 					<input class="form-control" formControlName="thefalse">
 				</div>
 				<div class="form-group">
-					<label class="form-control-label">First</label>
-					<input value="0" class="form-control" formControlName="first">
+					<label class="custom-toggle">
+						<input type="checkbox" formControlName="first">
+						<span class="custom-toggle-slider rounded-circle" data-label-off="First" data-label-on="First"></span>
+					</label>
 				</div>
 				<div class="form-group">
 					<label class="form-control-label">Required Answers (add ',' if more than 1)</label>
@@ -369,6 +432,45 @@ prop="logic"
 	
 		<div class="modal-footer">
 			<button class="btn btn-success" [disabled]="!addQForm.valid" type="button" (click)="addQ()">
+				Create
+			</button>
+	
+			<button class="btn btn-outline-danger ml-auto" data-dismiss="modal" type="button" (click)="closeModal()">
+				Close
+			</button>
+		</div>
+	</ng-template>
+
+	<ng-template #addZModal>
+		<div class="modal-header bg-primary">
+			<h6 class="modal-title text-white my-auto" id="modal-title-default">
+				Add Ending
+			</h6>
+	
+			<button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="closeModal()">
+				<span class="text-white my-auto"> × </span>
+			</button>
+		</div>
+	
+		<div class="modal-body">
+			<form [formGroup]="addZForm">
+				<div class="form-group">
+					<label class="form-control-label">Name</label>
+					<input class="form-control" formControlName="name">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">Link</label>
+					<input class="form-control" formControlName="link">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="nameenglish">
+				</div>			
+			</form>
+		</div>
+	
+		<div class="modal-footer">
+			<button class="btn btn-success" [disabled]="!addZForm.valid" type="button" (click)="addZ()">
 				Create
 			</button>
 	
@@ -396,8 +498,16 @@ prop="logic"
 					<textarea rows="10" cols="50" class="form-control" formControlName="question"></textarea>
 				</div>
 				<div class="form-group">
+					<label class="form-control-label">English Q/S</label>
+					<textarea rows="10" cols="50" class="form-control" formControlName="questionenglish"></textarea>
+				</div>
+				<div class="form-group">
 					<label class="form-control-label">Button Name (if any)</label>
 					<input class="form-control" formControlName="buttonname">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">Button Name (english)</label>
+					<input class="form-control" formControlName="buttonenglish">
 				</div>
 				<div class="form-group">
 					<label class="form-control-label">Button Link (if has button)</label>
@@ -412,8 +522,10 @@ prop="logic"
 					<input class="form-control" formControlName="thefalse">
 				</div>
 				<div class="form-group">
-					<label class="form-control-label">First</label>
-					<input value="0" class="form-control" formControlName="first">
+					<label class="custom-toggle">
+						<input type="checkbox" formControlName="first">
+						<span class="custom-toggle-slider rounded-circle" data-label-off="First" data-label-on="First"></span>
+					</label>				
 				</div>
 				<div class="form-group">
 					<label class="form-control-label">Required Answers (add ',' if more than 1)</label>
@@ -428,6 +540,45 @@ prop="logic"
 	
 		<div class="modal-footer">
 			<button class="btn btn-success" [disabled]="!editQForm.valid" type="button" (click)="editQ()">
+				Update
+			</button>
+	
+			<button class="btn btn-outline-danger ml-auto" data-dismiss="modal" type="button" (click)="closeModal()">
+				Close
+			</button>
+		</div>
+	</ng-template>
+
+	<ng-template #editZModal>
+		<div class="modal-header bg-primary">
+			<h6 class="modal-title text-white my-auto" id="modal-title-default">
+				Update Ending
+			</h6>
+	
+			<button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="closeModal()">
+				<span class="text-white my-auto"> × </span>
+			</button>
+		</div>
+	
+		<div class="modal-body">
+			<form [formGroup]="editZForm">
+				<div class="form-group">
+					<label class="form-control-label">Name</label>
+					<input class="form-control" formControlName="name">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">Link</label>
+					<input class="form-control" formControlName="link">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="nameenglish">
+				</div>	
+			</form>
+		</div>
+	
+		<div class="modal-footer">
+			<button class="btn btn-success" [disabled]="!editZForm.valid" type="button" (click)="editZ()">
 				Update
 			</button>
 	
@@ -453,6 +604,10 @@ prop="logic"
 				<div class="form-group">
 					<label class="form-control-label">Sub Category Name</label>
 					<input class="form-control" formControlName="name">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="englishname">
 				</div>
 			</form>
 		</div>
@@ -484,6 +639,10 @@ prop="logic"
 				<div class="form-group">
 					<label class="form-control-label">Sub Category Name</label>
 					<input class="form-control" formControlName="name">
+				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="englishname">
 				</div>
 			</form>
 		</div>

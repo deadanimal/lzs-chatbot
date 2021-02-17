@@ -48,7 +48,7 @@ export class ServicesService {
   updateBotCategory(id: number, body: any): Observable<any> {
     let tempUrl = this.botmanCategoryUrl + "updateBotCategory";
     return this.http
-      .post<any[]>(tempUrl, { name: body.value.name, id: id })
+      .post<any[]>(tempUrl, { name: body.value.name, id: id, englishname: body.value.englishname })
       .pipe(tap((res) => {}));
   }
 

@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivateChild,CanActivate {
 
   ){ }
   
-  canActivateChild(route: ActivatedRouteSnapshot){
+  canActivateChild(route: ActivatedRouteSnapshot): boolean{
     if (this.auth.userDetail === undefined) {
       let token = this.jwtService.getToken('accessToken');
       if (!token) {
@@ -30,17 +30,25 @@ export class AuthGuard implements CanActivateChild,CanActivate {
       }else{
          return true;
       }
+      // this.auth.getUserDetail().subscribe((reso)=>{
+      //   if (reso.role == 2 || reso.role == 1) {        
+      //     return true
+      //   }
+      //   else {        
+      //     this.router.navigate(['/auth/login'])
+      //   }     
+      // })
     }else{
-      if (this.auth.userDetail.role == 2) {
+      if (this.auth.userDetail.role == 2 || this.auth.userDetail.role == 1) {        
         return true
       }
-      else {
-        return this.router.navigate(['/admin/dashboard'])
-      }
-    }
+      else {        
+        this.router.navigate(['/auth/login'])
+      }     
+    }     
   }
 
-  canActivate(route: ActivatedRouteSnapshot): boolean{
+  canActivate(route: ActivatedRouteSnapshot){
 
       if (this.auth.userDetail === undefined) {
         let token = this.jwtService.getToken('accessToken');
@@ -49,22 +57,14 @@ export class AuthGuard implements CanActivateChild,CanActivate {
         }else{
            return true;
         }
-        // this.auth.getUserDetail().subscribe((reso)=>{
-        //   if (reso.role == 2 || reso.role == 1) {        
-        //     return true
-        //   }
-        //   else {        
-        //     this.router.navigate(['/auth/login'])
-        //   }     
-        // })
       }else{
-        if (this.auth.userDetail.role == 2 || this.auth.userDetail.role == 1) {        
+        if (this.auth.userDetail.role == 2) {
           return true
         }
-        else {        
-          this.router.navigate(['/auth/login'])
-        }     
-      }  
+        else {
+          return this.router.navigate(['/admin/dashboard'])
+        }
+      }
   
   }
 }

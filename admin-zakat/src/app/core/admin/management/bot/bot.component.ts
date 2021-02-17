@@ -41,7 +41,7 @@ export class BotComponent implements OnInit {
     updateFormMessages = {
       name: [
         { type: 'required', message: 'Name is required' }
-      ],     
+      ],    
     };
 
     subForm: FormGroup
@@ -66,13 +66,16 @@ export class BotComponent implements OnInit {
   initForm() {
     this.createForm = this.fb.group({
       name: new FormControl(null, Validators.compose([Validators.required])),
+      englishname: new FormControl(null)
     })
     this.updateForm = this.fb.group({
       name: new FormControl(null, Validators.compose([Validators.required])),
+      englishname: new FormControl(null)
     })
     this.subForm = this.fb.group({
       name: new FormControl(null, Validators.compose([Validators.required])),
       id: new FormControl(null, Validators.compose([Validators.required])),
+      englishname: new FormControl(null)
     })
   }
 
@@ -151,7 +154,7 @@ export class BotComponent implements OnInit {
     this.servicesService.addSubCategory(this.subForm.value).subscribe(
       (res) => {
           if (res.status == "Success"){
-            this.notifySuccess("Successfully Deleted");
+            this.notifySuccess("Successfully Created");
             this.init_data();
             this.closeModal();
           }
@@ -176,6 +179,7 @@ export class BotComponent implements OnInit {
           this.row = row 
           
           this.updateForm.controls.name.setValue(this.row.category_name)
+          this.updateForm.controls.englishname.setValue(this.row.category_name_english)
           this.modal = this.modalService.show(
             modalRef, this.modalConfig
           );

@@ -5,23 +5,23 @@ namespace App\Http\Conversations;
 use BotMan\BotMan\Messages\Conversations\Conversation;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
-use Botman\driverweb\WebDriver;
+//use Botman\driverweb\WebDriver;
 use ChrisKonnertz\StringCalc\StringCalc;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\File;
+//use Illuminate\Support\Facades\File;
 use App\Customer;
 use App\Conversationz;
 use App\ConversationId;
 //use BotMan\BotMan\Messages\Attachments\File;
-use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
-use App\Http\Conversations\AgentConversation;
+//use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
+//use App\Http\Conversations\AgentConversation;
 use App\UserReview;
 use App\LiveChatNotification;
-use Loilo\Fuse;
+//use Loilo\Fuse;
 use Mpdf\Mpdf;
-use Event;
+//use Event;
 use DB;
-use PDF;
+//use PDF;
 use \Datetime;
 use App\User;
 use App\AdminBusy;
@@ -64,13 +64,12 @@ class OnboardingConversation extends Conversation
                     if ($answer->getText() == "Bahasa Malaysia" || $answer->getText() == "bahasa malaysia"){
                         $this->language = "Bahasa Malaysia";               
                         $this->say("Anda telah pilih Bahasa Malaysia");               
-                        $this->askName();
-                        
-        
+                        $this->askName();        
                         
                     }else if ($answer->getText() == "English" || $answer->getText() == "english"){
                         $this->language = "English";
-                        $this->say("You have chosen English");                
+                        $this->say("You have chosen English"); 
+                              
                         $this->askName();              
                     }else{
                         return $this->repeat();
@@ -83,32 +82,60 @@ class OnboardingConversation extends Conversation
         }
 
     }
+
     protected function beforeMainMenu(){
         $c = DB::table("toggle_notification")->where("id",1)->first();
 
         if ($c->on_off == 1){ 
-            $beforeMainQuestion = Question::create('Klik Salah Satu')
+            
+            if ($this->language == "English"){
+
+                  $beforeMainQuestion = Question::create('Please Select One')
+            ->addButton(Button::create("Main Categories")->value("Main Categories"))
+            ->addButton(Button::create("Live Chat")->value("Live Chat"));
+
+            }else{
+            
+                $beforeMainQuestion = Question::create('Klik Salah Satu')
             ->addButton(Button::create("Kategori Utama")->value("Kategori Utama"))
             ->addButton(Button::create("Live Chat")->value("Live Chat"));
+
+            }          
 
             $this->createMessageDB("Kategori Utama,Live Chat");
 
             $this->ask($beforeMainQuestion, function ($answer) {
-                if ($this->checkIfValid("Kategori Utama",$answer->getText()) == "valid"){
-                // $this->editMessageDB("Kategori Utama");
-                    $this->askMainMenu();
-                }
-                else if ($this->checkIfValid("Live Chat",$answer->getText()) == "valid"){
-                // $this->editMessageDB("Live Chat");
-                    $this->liveChat();
-                }else{
+                if ($this->language == "Bahasa Malaysia"){
+                        if ($this->checkIfValid("Kategori Utama",$answer->getText()) == "valid"){
+                        // $this->editMessageDB("Kategori Utama");
+                            $this->askMainMenu();
+                        }
+                        else if ($this->checkIfValid("Live Chat",$answer->getText()) == "valid"){
+                        // $this->editMessageDB("Live Chat");
+                            $this->liveChat();
+                        }else{
 
-                // $this->editMessageDB($answer->getText());
-                    $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                    return $this->repeat();
-                    //$this->allowNLP($answer);
-                }  
-            });
+                        // $this->editMessageDB($answer->getText());
+                            $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                            return $this->repeat();
+                            //$this->allowNLP($answer);
+                        }  
+                    }else{
+                        if ($this->checkIfValid("Main Categories",$answer->getText()) == "valid"){
+                                $this->askMainMenu();
+                            }
+                            else if ($this->checkIfValid("Live Chat",$answer->getText()) == "valid"){
+                                $this->liveChat();
+                            }else{
+    
+                            // $this->editMessageDB($answer->getText());
+                                $this->say("Sorry, I couldn't understand. Please Try Options Below");
+                                return $this->repeat();
+                                //$this->allowNLP($answer);
+                            }  
+                    }
+                });
+            
         }else{
             $this->askMainMenu();
         }
@@ -126,36 +153,68 @@ class OnboardingConversation extends Conversation
         $this->beforeMainMenu();
     }    
     protected function doFeedback(){
-
-        $thequestion = Question::create("Sila bagi 1 hingga 5")
-        ->addButton(Button::create("1")->value("1"))
-        ->addButton(Button::create("2")->value("2"))
-        ->addButton(Button::create("3")->value('3'))
-        ->addButton(Button::create("4")->value('4'))
-        ->addButton(Button::create("5")->value('5'));
-
-        $this->ask($thequestion, function ($answer){           
-
-            if($answer == "1" || $answer == "5" || $answer == "2" || $answer == "3" || $answer == "4"){
-                 $ur = new UserReview();
-                 $ur->userid = $this->userId;
-                 $ur->star = $answer->getText();
-
-                $this->ask("Sila bagi maklum balas terhadap perkhidmatan kami", function ($answer) use ($ur){
+        if ($this->language == "Bahasa Malaysia"){
+            $thequestion = Question::create("Sila bagi 1 hingga 5")
+            ->addButton(Button::create("1")->value("1"))
+            ->addButton(Button::create("2")->value("2"))
+            ->addButton(Button::create("3")->value('3'))
+            ->addButton(Button::create("4")->value('4'))
+            ->addButton(Button::create("5")->value('5'));
+    
+            $this->ask($thequestion, function ($answer){           
+    
+                if($answer == "1" || $answer == "5" || $answer == "2" || $answer == "3" || $answer == "4"){
+                     $ur = new UserReview();
+                     $ur->userid = $this->userId;
+                     $ur->star = $answer->getText();
+    
+                    $this->ask("Sila bagi maklum balas terhadap perkhidmatan kami", function ($answer) use ($ur){
+                       
+                        $u = Customer::find($this->userId);
+                        $u->lasttime = new DateTime();
+                        $ur->feedback = $answer->getText();   
+                        $ur->save();
+                        $this->say("Sekian, Terima Kasih. Harap saya dapat bantu anda.");
+                        return true;     
+                    });
+                     
                    
-                    $u = Customer::find($this->userId);
-                    $u->lasttime = new DateTime();
-                    $ur->feedback = $answer->getText();   
-                    $ur->save();
-                    $this->say("Sekian, Terima Kasih. Harap saya dapat bantu anda.");
-                    return true;     
-                });
-                 
-               
-            }else{
-                return $this->repeat();
-            }
-        });
+                }else{
+                    return $this->repeat();
+                }
+            });
+            
+        }else{
+            $thequestion = Question::create("Please Give Ratings From 1 to 5")
+            ->addButton(Button::create("1")->value("1"))
+            ->addButton(Button::create("2")->value("2"))
+            ->addButton(Button::create("3")->value('3'))
+            ->addButton(Button::create("4")->value('4'))
+            ->addButton(Button::create("5")->value('5'));
+    
+            $this->ask($thequestion, function ($answer){           
+    
+                if($answer == "1" || $answer == "5" || $answer == "2" || $answer == "3" || $answer == "4"){
+                     $ur = new UserReview();
+                     $ur->userid = $this->userId;
+                     $ur->star = $answer->getText();
+    
+                    $this->ask("Please Give Your Feedback For Our Service", function ($answer) use ($ur){
+                       
+                        $u = Customer::find($this->userId);
+                        $u->lasttime = new DateTime();
+                        $ur->feedback = $answer->getText();   
+                        $ur->save();
+                        $this->say("Thank You For Your Feedback, Hope We Were Able Help You");
+                        return true;     
+                    });
+                     
+                   
+                }else{
+                    return $this->repeat();
+                }
+            });
+        }
 
     }
     public function skipConversation()
@@ -164,66 +223,137 @@ class OnboardingConversation extends Conversation
     }
 
     protected function askPnum(){
-        $this->ask('Sila nyatakan nombor telefon anda.', function ($answer) {
-            // var_dump(is_numeric($answer->getText()));
-            if (is_numeric($answer->getText()) === true && strlen($answer->getText()) > 9){
-                $this->phoneNum = $answer->getText();
-                //create client here
-                $record = new Customer();
-                //$record->firsttime = new DateTime();
-                $record->phonenumber = $this->phoneNum;
-                $record->name = $this->name;
-                $record->email = $this->email;
-                $record->languageOfChoice = $this->language;
-                $record->save();
-                
-                $this->userId = $record->id;
+        if ($this->language == "English"){
+            $this->ask('What is your phone number?', function ($answer) {
+                // var_dump(is_numeric($answer->getText()));
+                if (is_numeric($answer->getText()) === true && strlen($answer->getText()) > 9){
+                    $this->phoneNum = $answer->getText();
+                    //create client here
+                    $record = new Customer();
+                    //$record->firsttime = new DateTime();
+                    $record->phonenumber = $this->phoneNum;
+                    $record->name = $this->name;
+                    $record->email = $this->email;
+                    $record->languageOfChoice = $this->language;
+                    $record->save();
+                    
+                    $this->userId = $record->id;
+    
+                    $this->beforeMainMenu();
+                }else{
+                    return $this->repeat('Invalid Phone Number, Please Try Again'); 
+                }            
+            }); 
+        }
+        else{
+            $this->ask('Sila nyatakan nombor telefon anda.', function ($answer) {
+                // var_dump(is_numeric($answer->getText()));
+                if (is_numeric($answer->getText()) === true && strlen($answer->getText()) > 9){
+                    $this->phoneNum = $answer->getText();
+                    //create client here
+                    $record = new Customer();
+                    //$record->firsttime = new DateTime();
+                    $record->phonenumber = $this->phoneNum;
+                    $record->name = $this->name;
+                    $record->email = $this->email;
+                    $record->languageOfChoice = $this->language;
+                    $record->save();
+                    
+                    $this->userId = $record->id;
+    
+                    $this->beforeMainMenu();
+                }else{
+                    return $this->repeat('Nombor tidak sah, Sila cuba lagi'); 
+                }            
+            }); 
 
-                $this->beforeMainMenu();
-            }else{
-                return $this->repeat('Nombor tidak sah, Sila cuba lagi'); 
-            }            
-        }); 
+        }
     }
     protected function askEmail(){
-        $this->ask('Sila nyatakan emel anda.', function ($answer) {
-            $test = filter_var($answer, FILTER_VALIDATE_EMAIL);
-            if($test !== false){
-                $this->email = $answer->getText();                        
-                $this->askPnum();                                   
-            }else{            
-                return $this->repeat('Emel tidak sah, Sila cuba lagi');
-            }
-        }); 
+        if ($this->language == "English"){
+            $this->ask('What is your email?', function ($answer) {
+                $test = filter_var($answer, FILTER_VALIDATE_EMAIL);
+                if($test !== false){
+                    $this->email = $answer->getText();                        
+                    $this->askPnum();                                   
+                }else{            
+                    return $this->repeat('Email is not valid, Please Try Again');
+                }
+            }); 
+        }else{
+            $this->ask('Sila nyatakan emel anda.', function ($answer) {
+                $test = filter_var($answer, FILTER_VALIDATE_EMAIL);
+                if($test !== false){
+                    $this->email = $answer->getText();                        
+                    $this->askPnum();                                   
+                }else{            
+                    return $this->repeat('Emel tidak sah, Sila cuba lagi');
+                }
+            }); 
+        }
     }
     protected function askName(){
-        $this->ask('Sila nyatakan nama anda.', function ($answer) {
-            if (preg_match('~[0-9]~', $answer->getText()) > 0){
-                $this->repeat();
-            }else{
-                $this->name = $answer->getText();
-                $this->askEmail();
-            }             
-        }); 
+        if ($this->language == "English"){
+            $this->ask('What is your name?', function ($answer) {
+                if (preg_match('~[0-9]~', $answer->getText()) > 0){
+                    $this->repeat();
+                }else{
+                    $this->name = $answer->getText();
+                    $this->askEmail();
+                }             
+            }); 
+        }else{
+            $this->ask('Sila nyatakan nama anda.', function ($answer) {
+                if (preg_match('~[0-9]~', $answer->getText()) > 0){
+                    $this->repeat();
+                }else{
+                    $this->name = $answer->getText();
+                    $this->askEmail();
+                }             
+            }); 
+        }      
     }
     protected function stopConvo(){
-        $thequestion = Question::create("Anda Mahu Teruskan Pertanyaan?")
-        ->addButton(Button::create("TIDAK")->value("TIDAK"))
-        ->addButton(Button::create("YA")->value("YA"));
-        $this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
-        $this->ask($thequestion, function ($answer){
-            if ($this->checkIfValid($answer->getText(),"YA") == "valid"){
-                $this->editMessageDB($answer->getText());
-                $this->askMainMenu();   
-            }
-            else if ($this->checkIfValid($answer->getText(),"TIDAK") == "valid"){
-                $this->editMessageDB($answer->getText());
-                $this->doFeedback();   
-            }else{
-                return $this->repeat();
-            }
+
+        if ($this->language == "Bahasa Malaysia"){
+            $thequestion = Question::create("Anda Mahu Teruskan Pertanyaan?")
+            ->addButton(Button::create("TIDAK")->value("TIDAK"))
+            ->addButton(Button::create("YA")->value("YA"));
+            $this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
+            $this->ask($thequestion, function ($answer){
+                if ($this->checkIfValid($answer->getText(),"YA") == "valid"){
+                    $this->editMessageDB($answer->getText());
+                    $this->askMainMenu();   
+                }
+                else if ($this->checkIfValid($answer->getText(),"TIDAK") == "valid"){
+                    $this->editMessageDB($answer->getText());
+                    $this->doFeedback();   
+                }else{
+                    return $this->repeat();
+                }
+                
+            });
+
+        }else{
+            $thequestion = Question::create("Do You Want To Continue?")
+            ->addButton(Button::create("No")->value("NO"))
+            ->addButton(Button::create("Yes")->value("YES"));
+            $this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
+            $this->ask($thequestion, function ($answer){
+                if ($this->checkIfValid($answer->getText(),"YES") == "valid"){
+                    $this->editMessageDB($answer->getText());
+                    $this->askMainMenu();   
+                }
+                else if ($this->checkIfValid($answer->getText(),"NO") == "valid"){
+                    $this->editMessageDB($answer->getText());
+                    $this->doFeedback();   
+                }else{
+                    return $this->repeat();
+                }
+                
+            });
             
-        });
+        }
         
     }
     protected function createMessageDB($message){
@@ -246,7 +376,12 @@ class OnboardingConversation extends Conversation
         $u->save();
     }
     protected function askMainMenu(){
-        $mainQuestion = Question::create('Klik Salah Satu');
+        
+        if ($this->language == "Bahasa Malaysia"){
+            $mainQuestion = Question::create('Klik Salah Satu');
+        }else{
+            $mainQuestion = Question::create('Please Click One');
+        }  
 
         //take main categories from the database
         $main_categories = DB::table('bot_category')->get();
@@ -255,9 +390,18 @@ class OnboardingConversation extends Conversation
         //     $mainQuestion->addButton(Button::create($value->name)->value($value->name));
         // }
         $message = "";
-        foreach ($main_categories as $key => $value) {
-            $message = $message . "," . $value->category_name;
-            $mainQuestion->addButton(Button::create($value->category_name)->value($value->category_name));
+
+        if ($this->language == "Bahasa Malaysia"){
+
+            foreach ($main_categories as $key => $value) {
+                $message = $message . "," . $value->category_name;
+                $mainQuestion->addButton(Button::create($value->category_name)->value($value->category_name));
+            }
+        }else{
+            foreach ($main_categories as $key => $value) {
+                $message = $message . "," . $value->category_name;
+                $mainQuestion->addButton(Button::create($value->category_name_english)->value($value->category_name_english));
+            }
         }
         // $message = $message . "," . "Live Chat";
         // $mainQuestion->addButton(Button::create("Live Chat")->value("Live Chat"));
@@ -265,12 +409,25 @@ class OnboardingConversation extends Conversation
         $this->ask($mainQuestion, function ($answer) use ($main_categories){
             $found = 0;
             $idofcat = 0;
-            foreach ($main_categories as $key => $value) {              
-                if ($this->checkIfValid($value->category_name,$answer->getText()) == "valid"){
-                    $found = 1;
-                    $this->editMessageDB($answer->getText());
-                    $idofcat = $value->id;
+            if ($this->language == "Bahasa Malaysia"){
+                foreach ($main_categories as $key => $value) {              
+                    if ($this->checkIfValid($value->category_name,$answer->getText()) == "valid"){
+                        $found = 1;
+                        $this->editMessageDB($answer->getText());
+                        $idofcat = $value->id;
+                    }
                 }
+
+            }else{
+    
+                foreach ($main_categories as $key => $value) {              
+                    if ($this->checkIfValid($value->category_name_english,$answer->getText()) == "valid"){
+                        $found = 1;
+                        $this->editMessageDB($value->category_name);
+                        $idofcat = $value->id;
+                    }
+                }
+
             }
             // foreach ($otherMenus as $key => $value) {
             //     if ($this->checkIfValid($value->name,$answer->getText()) == "valid"){
@@ -279,7 +436,12 @@ class OnboardingConversation extends Conversation
             //     }            
             // }
             if ($found == 1){
-                $this->say("Anda telah pilih " . $answer->getText());
+                if ($this->language == "Bahasa Malaysia"){
+                    $this->say("Anda telah pilih " . $answer->getText());
+                }else{
+                    $this->say("You Have Chosen " . $answer->getText());
+                }
+                
                 $this->processSubCategories($idofcat);
             }
             // }else if($this->checkIfValid($answer->getText(),"Live Chat") == "valid"){
@@ -287,7 +449,11 @@ class OnboardingConversation extends Conversation
             //     $this->liveChat();
             // }
             else{
-                $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                if ($this->language == "Bahasa Malaysia"){
+                    $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                }else{
+                    $this->say("Sorry, I couldn't understand. Please Try Options Below");           
+                }
                 return $this->repeat();
                 //$this->allowNLP($answer);
             }           
@@ -295,157 +461,266 @@ class OnboardingConversation extends Conversation
     }
 
     protected function liveChat(){
-            //check if got available admin
-            $foundz = 0;
-           // $noactive = 1;
-            $admins = User::where("role",1)->get();
-            foreach ($admins as $key => $value) {
-                // if ($value->last_login !== NULL && $value->last_logout === NULL){
-                //     $noactive = 0;
-
-                    $found = AdminBusy::find($value->id);
-                                    //var_dump($found);
-                                    if (!$found){
-                                        $foundz = 1;
-                                        break;
-                                    }
-                //}                
-            }
-            //got free admin
-            if ($foundz == 1){
-                //check if got a request on hold
-                $requestOnHold = liveChatNotification::where("waiting",0)->first();
-                if ($requestOnHold){
-                    // $live_chat = new liveChatNotification();
-                    // $live_chat->userid = $this->userId;
-                    // $live_chat->language = $this->language;
-                    // $live_chat->waiting = 1;
-                    // $live_chat->who = "admin"; 
-                    // $live_chat->save();
-                    //update customer when transfered
-                    $total = liveChatNotification::all();
-                    $posi = count($total) + 1;
-                    $c = Customer::find($this->userId);
-                    $c->transferTime = new DateTime();
-                    $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
-                    $c->save();
-                    $question = Question::create('Klik Butang Di Bawah');
-                    $message = "Masuk Live Chat";
-                    $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
-
-                    $this->createMessageDB($message);
-                    $this->ask($question, function ($answer) use ($posi){
-                       if($answer->isInteractiveMessageReply()){                                                 
-                            $live_chat = new liveChatNotification();
-                            $live_chat->userid = $this->userId;
-                            $live_chat->language = $this->language;
-                            $live_chat->who = "admin";
-                            $live_chat->waiting = 1;
-                            $live_chat->save();                        
-
-                            $cid = new ConversationId();
-                            $cid->receipent = "client";
-                            $cid->clientid = $this->userId;
-                            $cid->agentid = 0;
-                            $cid->message = "Sila Tunggu Untuk Ejen Kami Masuk dan anda diminta tidak tutup window ini selagi sesi tidak habis.";
-                            $cid->save();   
-                            
-                            $cid = new ConversationId();
-                            $cid->receipent = "client";
-                            $cid->clientid = $this->userId;
-                            $cid->agentid = 0;
-                            $cid->message = "Kedudukan anda dalam list: " . $posi;
-                            $cid->save();
-
-                        }
-                      else{
-                            return $this->repeat();
-                      }
-                    });
-                    // //$ready = 0;
-                    // $this->ask("Sila tunggu untuk ejen kami respon....", function ($answer){
-                    //     Event::listen($this->userId . ".agentmsg", function($m)
-                    //     {
-                    //         var_dump("ff");
-                    //         $this->timeToChat($m);                
-                    //     });
-                    //     return $this->repeat();                       
-                    // });
-                }else{
-
-                    $c = Customer::find($this->userId);
-                    $c->transferTime = new DateTime();
-                    $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
-                    $c->save();
-
-                    $question = Question::create('Klik Butang Di Bawah');
-                    $message = "Masuk Live Chat";
-                    $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
-
-                    $this->createMessageDB($message);
-                    $this->ask($question, function ($answer){
-                        if($answer->isInteractiveMessageReply()){
-                            // $c = Customer::find($this->userId);
-                            // $c->transferTime = new DateTime();
-                            // $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
-                            // $c->save();                            
-                            $live_chat = new liveChatNotification();
-                            $live_chat->userid = $this->userId;
-                            $live_chat->language = $this->language;
-                            $live_chat->who = "admin";
-                            $live_chat->save();
-                            $cid = new ConversationId();
-                            $cid->receipent = "client";
-                            $cid->clientid = $this->userId;
-                            $cid->agentid = 0;
-                            $cid->message = "Sila Tunggu Untuk Ejen Kami Masuk dan anda diminta tidak tutup window ini selagi sesi tidak habis.";
-                            $cid->save();
-                        }
+        if ($this->language == "Bahasa Malaysia"){
+             //check if got available admin
+             $foundz = 0;
+             // $noactive = 1;
+              $admins = User::where("role",1)->get();
+              foreach ($admins as $key => $value) {
+                  // if ($value->last_login !== NULL && $value->last_logout === NULL){
+                  //     $noactive = 0;
+  
+                      $found = AdminBusy::find($value->id);
+                                      //var_dump($found);
+                                      if (!$found){
+                                          $foundz = 1;
+                                          break;
+                                      }
+                  //}                
+              }
+              //got free admin
+              if ($foundz == 1){
+                  //check if got a request on hold
+                  $requestOnHold = liveChatNotification::where("waiting",0)->first();
+                  if ($requestOnHold){
+                      // $live_chat = new liveChatNotification();
+                      // $live_chat->userid = $this->userId;
+                      // $live_chat->language = $this->language;
+                      // $live_chat->waiting = 1;
+                      // $live_chat->who = "admin"; 
+                      // $live_chat->save();
+                      //update customer when transfered
+                      $total = liveChatNotification::all();
+                      $posi = count($total) + 1;
+                      $c = Customer::find($this->userId);
+                      $c->transferTime = new DateTime();
+                      $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
+                      $c->save();
+                      $question = Question::create('Klik Butang Di Bawah');
+                      $message = "Masuk Live Chat";
+                      $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+  
+                      $this->createMessageDB($message);
+                      $this->ask($question, function ($answer) use ($posi){
+                         if($answer->isInteractiveMessageReply()){                                                 
+                              $live_chat = new liveChatNotification();
+                              $live_chat->userid = $this->userId;
+                              $live_chat->language = $this->language;
+                              $live_chat->who = "admin";
+                              $live_chat->waiting = 1;
+                              $live_chat->save();                        
+  
+                              $cid = new ConversationId();
+                              $cid->receipent = "client";
+                              $cid->clientid = $this->userId;
+                              $cid->agentid = 0;
+                              $cid->message = "Sila Tunggu Untuk Ejen Kami Masuk dan anda diminta tidak tutup window ini selagi sesi tidak habis.";
+                              $cid->save();   
+                              
+                              $cid = new ConversationId();
+                              $cid->receipent = "client";
+                              $cid->clientid = $this->userId;
+                              $cid->agentid = 0;
+                              $cid->message = "Kedudukan anda dalam list: " . $posi;
+                              $cid->save();
+  
+                          }
                         else{
-                            return $this->repeat();
+                              return $this->repeat();
                         }
-                    });
-
-                    // $this->say("Sila tunggu untuk ejen kami respon....");
-                    //$this->timeToChat();
-                    //sleep(10);
-                    //$c = ConversationId::where("clientid",$this->userId)->where("receipent","client")->first();
-                    //var_dump($c->message);
-                    // while ($ready == 0) {
-                    //     if ($first != 1){
-                    //         $this->say("Sila tunggu untuk ejen kami respon....");
-                    //         $first = 1;
-                    //     }
+                      });
+                      // //$ready = 0;
+                      // $this->ask("Sila tunggu untuk ejen kami respon....", function ($answer){
+                      //     Event::listen($this->userId . ".agentmsg", function($m)
+                      //     {
+                      //         var_dump("ff");
+                      //         $this->timeToChat($m);                
+                      //     });
+                      //     return $this->repeat();                       
+                      // });
+                  }else{
+  
+                      $c = Customer::find($this->userId);
+                      $c->transferTime = new DateTime();
+                      $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
+                      $c->save();
+  
+                      $question = Question::create('Klik Butang Di Bawah');
+                      $message = "Masuk Live Chat";
+                      $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+  
+                      $this->createMessageDB($message);
+                      $this->ask($question, function ($answer){
+                          if($answer->isInteractiveMessageReply()){
+                              // $c = Customer::find($this->userId);
+                              // $c->transferTime = new DateTime();
+                              // $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
+                              // $c->save();                            
+                              $live_chat = new liveChatNotification();
+                              $live_chat->userid = $this->userId;
+                              $live_chat->language = $this->language;
+                              $live_chat->who = "admin";
+                              $live_chat->save();
+                              $cid = new ConversationId();
+                              $cid->receipent = "client";
+                              $cid->clientid = $this->userId;
+                              $cid->agentid = 0;
+                              $cid->message = "Sila Tunggu Untuk Ejen Kami Masuk dan anda diminta tidak tutup window ini selagi sesi tidak habis.";
+                              $cid->save();
+                          }
+                          else{
+                              return $this->repeat();
+                          }
+                      });
+  
+                      // $this->say("Sila tunggu untuk ejen kami respon....");
+                      //$this->timeToChat();
+                      //sleep(10);
+                      //$c = ConversationId::where("clientid",$this->userId)->where("receipent","client")->first();
+                      //var_dump($c->message);
+                      // while ($ready == 0) {
+                      //     if ($first != 1){
+                      //         $this->say("Sila tunggu untuk ejen kami respon....");
+                      //         $first = 1;
+                      //     }
+                          
                         
-                      
-                    //     if (isset($c[0])){
-                    //         $ready = 1;
-                    //         $this->bot->startConversation(new AgentConversation);
-                    //     }                        
-                    // }
+                      //     if (isset($c[0])){
+                      //         $ready = 1;
+                      //         $this->bot->startConversation(new AgentConversation);
+                      //     }                        
+                      // }
+                  
+              }
+              }else{
+                 // if ($noactive == 0){
+                      $this->say("Ejen sedang layan pelanggan lain, Sila cuba sebentar lagi atau guna bot kami.");
+                  // }else{
+                  //     $this->say("Tiada Ejen Dijumpai");
+                  // }
+                  $this->askMainMenu();
+              }
+              
+              // $finish = 0;
+              // while ($finish == 0) {
+              //    sleep(2);
+              //    $f = db::table('customer')->where("userid",$d)->get();
+              //    if (count($f) != 0){
+              //       // var_dump($f);
+              //        $this->say($f[0]->message);
+              //        $finish = 1;
+              //    }
+              // }
+          /////////////THIS FOR TRANSFER TO AGENT////////////////
+        }else{
+        
+             $foundz = 0;
+         
+              $admins = User::where("role",1)->get();
+              foreach ($admins as $key => $value) {
+   
+  
+                      $found = AdminBusy::find($value->id);
+                                      //var_dump($found);
+                                      if (!$found){
+                                          $foundz = 1;
+                                          break;
+                                      }
+                  //}                
+              }
+              //got free admin
+              if ($foundz == 1){
+                  //check if got a request on hold
+                  $requestOnHold = liveChatNotification::where("waiting",0)->first();
+                  if ($requestOnHold){
+
+                      $total = liveChatNotification::all();
+                      $posi = count($total) + 1;
+                      $c = Customer::find($this->userId);
+                      $c->transferTime = new DateTime();
+                      $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
+                      $c->save();
+                      $question = Question::create('Please Click The Button Below');
+                      $message = "Masuk Live Chat";
+                      $question->addButton(Button::create("Join Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+  
+                      $this->createMessageDB($message);
+                      $this->ask($question, function ($answer) use ($posi){
+                         if($answer->isInteractiveMessageReply()){                                                 
+                              $live_chat = new liveChatNotification();
+                              $live_chat->userid = $this->userId;
+                              $live_chat->language = $this->language;
+                              $live_chat->who = "admin";
+                              $live_chat->waiting = 1;
+                              $live_chat->save();                        
+  
+                              $cid = new ConversationId();
+                              $cid->receipent = "client";
+                              $cid->clientid = $this->userId;
+                              $cid->agentid = 0;
+                              $cid->message = "Please wait for our agent to join and do not close this window until the session is over.";
+                              $cid->save();   
+                              
+                              $cid = new ConversationId();
+                              $cid->receipent = "client";
+                              $cid->clientid = $this->userId;
+                              $cid->agentid = 0;
+                              $cid->message = "Your Position In The Queue: " . $posi;
+                              $cid->save();
+  
+                          }
+                        else{
+                              return $this->repeat();
+                        }
+                      });
+          
+                    }else{
+    
+                        $c = Customer::find($this->userId);
+                        $c->transferTime = new DateTime();
+                        $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
+                        $c->save();
+    
+                        $question = Question::create('Please Click The Button Below');
+                        $message = "Join Live Chat";
+                        $question->addButton(Button::create("Join Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+    
+                        $this->createMessageDB($message);
+                        $this->ask($question, function ($answer){
+                            if($answer->isInteractiveMessageReply()){
+                        
+                                $live_chat = new liveChatNotification();
+                                $live_chat->userid = $this->userId;
+                                $live_chat->language = $this->language;
+                                $live_chat->who = "admin";
+                                $live_chat->save();
+                                $cid = new ConversationId();
+                                $cid->receipent = "client";
+                                $cid->clientid = $this->userId;
+                                $cid->agentid = 0;
+                                $cid->message = "Please wait for our agent to join and do not close this window until the session is over.";
+                                $cid->save();
+                            }
+                            else{
+                                return $this->repeat();
+                            }
+                        });
+    
                 
-            }
-            }else{
-               // if ($noactive == 0){
-                    $this->say("Ejen sedang layan pelanggan lain, Sila cuba sebentar lagi atau guna bot kami.");
-                // }else{
-                //     $this->say("Tiada Ejen Dijumpai");
-                // }
-                $this->askMainMenu();
-            }
-            
-            // $finish = 0;
-            // while ($finish == 0) {
-            //    sleep(2);
-            //    $f = db::table('customer')->where("userid",$d)->get();
-            //    if (count($f) != 0){
-            //       // var_dump($f);
-            //        $this->say($f[0]->message);
-            //        $finish = 1;
-            //    }
-            // }
-        /////////////THIS FOR TRANSFER TO AGENT////////////////
+                    
+                }
+              }else{
+              
+                      $this->say("Sorry our agents are not available, You can try again later or use our chatbot instead.");
+             
+                  $this->askMainMenu();
+              }
+              
+         
+        }
+           
     }
+
     protected function allowNLP($answer){
         $this->editMessageDB($answer->getText());
         $array_of_possibilities = $this->donlplikesearch($answer->getText());
@@ -520,11 +795,53 @@ class OnboardingConversation extends Conversation
         $this->askSubCategories($subcats);
     }
     protected function askSubCategories($subcats){
-            $question = Question::create('Klik Salah Satu');
+        if ($this->language == "Bahasa Malaysia"){
+                $question = Question::create('Klik Salah Satu');
+                $message = "";
+                foreach ($subcats as $key => $value) {
+                    $message = $message . "," . $value->sub_category_name;
+                    $question->addButton(Button::create($value->sub_category_name)->value($value->sub_category_name));
+                }
+                $this->createMessageDB($message);
+
+                $this->ask($question, function ($answer) use ($subcats){
+                    $found = 0;
+                    $idofcat = 0;
+                    $chosenSubcat = NULL;
+
+                    foreach ($subcats as $key => $value) {              
+                        if ($this->checkIfValid($answer->getText(),$value->sub_category_name) == "valid"){
+                            $found = 1;
+
+                            $chosenSubcat = $value;
+                        }
+                    }
+                    if ($found == 1){
+                        $this->say("Anda telah pilih " . $chosenSubcat->sub_category_name);
+                        $this->editMessageDB($answer->getText());
+                        //check if got category below it
+                        if ($chosenSubcat->id == 33){
+                            $this->mykadapi();
+                        }
+                        if ($chosenSubcat->has_sub == 1){
+                            $this->processSubSubCategories($chosenSubcat->id);
+                        }else{
+                            $this->getFirstQuestion($chosenSubcat);
+                        }                   
+                    }else{
+                        $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                        return $this->repeat();
+                            //$this->allowNLP($answer);
+                        
+                    }   
+                    
+                });
+        }else{
+            $question = Question::create('Please Select One');
             $message = "";
             foreach ($subcats as $key => $value) {
                 $message = $message . "," . $value->sub_category_name;
-                $question->addButton(Button::create($value->sub_category_name)->value($value->sub_category_name));
+                $question->addButton(Button::create($value->sub_category_name_english)->value($value->sub_category_name_english));
             }
             $this->createMessageDB($message);
 
@@ -534,32 +851,34 @@ class OnboardingConversation extends Conversation
                 $chosenSubcat = NULL;
 
                 foreach ($subcats as $key => $value) {              
-                    if ($this->checkIfValid($answer->getText(),$value->sub_category_name) == "valid"){
+                    if ($this->checkIfValid($answer->getText(),$value->sub_category_name_english) == "valid"){
                         $found = 1;
 
                         $chosenSubcat = $value;
                     }
                 }
                 if ($found == 1){
-                    $this->say("Anda telah pilih " . $chosenSubcat->sub_category_name);
-                    $this->editMessageDB($answer->getText());
+                    $this->say("You Have Chosen " . $chosenSubcat->sub_category_name_english);
+                    $this->editMessageDB($chosenSubcat->sub_category_name);
                     //check if got category below it
                     if ($chosenSubcat->id == 33){
                         $this->mykadapi();
                     }
                     if ($chosenSubcat->has_sub == 1){
-                         $this->processSubSubCategories($chosenSubcat->id);
+                        $this->processSubSubCategories($chosenSubcat->id);
                     }else{
                         $this->getFirstQuestion($chosenSubcat);
                     }                   
                 }else{
-                    $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                    $this->say("Sorry, I couldn't understand. Please Try Options Below");
                     return $this->repeat();
                         //$this->allowNLP($answer);
                     
                 }   
                 
             });
+        }
+            
     }
     protected function getFirstQuestion($subcat){
         $questions = DB::table("bot_questions")->where("category_id",$subcat->id)->get();
@@ -571,7 +890,7 @@ class OnboardingConversation extends Conversation
         }
     }
     protected function mykadapi(){
-        $this->ask("Sila masukkan nombor myKad anda (tanpa '-')", function ($answer) use ($value){
+        $this->ask("Sila masukkan nombor myKad anda (tanpa '-')", function ($answer) {
             if (is_numeric($answer->getText()) === true){
                 $question = ["subcategory"=>6];
                 $this->callApi(1,$answer->getText(),$question);
@@ -583,72 +902,147 @@ class OnboardingConversation extends Conversation
     }
     protected function getEndingMenu($question){
         $this->values = [];
-        $otherEndMenus = DB::table("end_selections")->where("subcategory",$question->category_id)->get();
-        $mainQuestion = Question::create('Klik Salah Satu');
-         $message = "";
-         foreach ($otherEndMenus as $key => $value) {
-            $message = $message . "," . $value->name;
 
-            if ($value->link != "" && $value->link !== NULL && $value->link != " "){
-                $mainQuestion->addButton(Button::create($value->name)->value($value->name)->additionalParameters(["link"=>$value->link]));
-            }else{
-                $mainQuestion->addButton(Button::create($value->name)->value($value->name));
-            }
-        }
-        $mainQuestion->addButton(Button::create("Menu Utama")->value("Menu Utama"));
-        $mainQuestion->addButton(Button::create("Tamatkan Sesi")->value("Tamatkan Sesi"));
+        if ($this->language == "Bahasa Malaysia"){
+            $otherEndMenus = DB::table("end_selections")->where("subcategory",$question->category_id)->get();
+                    $mainQuestion = Question::create('Klik Salah Satu');
+                    $message = "";
+                    foreach ($otherEndMenus as $key => $value) {
+                        $message = $message . "," . $value->name;
 
-        $message = $message . "," . "Menu Utama" . ',' . "Tamatkan Sesi";
-        $this->createMessageDB($message);
-
-        $this->ask($mainQuestion, function ($answer) use ($otherEndMenus,$question){
-            $found = 0;
-            foreach ($otherEndMenus as $key => $value) {
-                  
-                if ($this->checkIfValid($value->name,$answer->getText()) == "valid"){
-                    $found = 1;
-                    $this->editMessageDB($answer->getText());
-                    if($value->id == 1){
-                        $this->say("Anda telah pilih " . $answer->getText());
-                        $this->ask("Sila masukkan nombor myKad anda (tanpa '-')", function ($answer) use ($value,$question){
-                            if (is_numeric($answer->getText()) === true){
-                                $this->callApi($value->id,$answer->getText(),$question);
-                            }else{
-                                return $this->repeat();
-                            }
-
-                        });
-                        
+                        if ($value->link != "" && $value->link !== NULL && $value->link != " "){
+                            $mainQuestion->addButton(Button::create($value->name)->value($value->name)->additionalParameters(["link"=>$value->link]));
+                        }else{
+                            $mainQuestion->addButton(Button::create($value->name)->value($value->name));
+                        }
                     }
-                    
+                    $mainQuestion->addButton(Button::create("Menu Utama")->value("Menu Utama"));
+                    $mainQuestion->addButton(Button::create("Tamatkan Sesi")->value("Tamatkan Sesi"));
+
+                    $message = $message . "," . "Menu Utama" . ',' . "Tamatkan Sesi";
+                    $this->createMessageDB($message);
+
+                    $this->ask($mainQuestion, function ($answer) use ($otherEndMenus,$question){
+                        $found = 0;
+                        foreach ($otherEndMenus as $key => $value) {
+                            
+                            if ($this->checkIfValid($value->name,$answer->getText()) == "valid"){
+                                $found = 1;
+                                $this->editMessageDB($answer->getText());
+                                if(strtolower($value->name) == "lihat rekod bayaran"){
+                                    $this->say("Anda telah pilih " . $answer->getText());
+
+                                    if ($this->id == 168){
+                                        
+                                    }else{
+                                            $this->ask("Sila masukkan nombor myKad anda (tanpa '-')", function ($answer) use ($value,$question){
+                                            if (is_numeric($answer->getText()) === true){
+                                                $this->callApi(1,$answer->getText(),$question);
+                                            }else{
+                                                return $this->repeat();
+                                            }
+
+                                        });
+                                    }                                   
+                                    
+                                }
+                                
+                            }
+                        }
+                        if ($this->checkIfValid($answer->getText(),"Menu Utama") == "valid"){
+                            $found = 1;
+                            $this->editMessageDB($answer->getText());
+                            $this->askMainMenu();
+                        }
+                        if ($this->checkIfValid($answer->getText(),"Tamatkan Sesi") == "valid"){
+                            $found = 1;
+                            $this->editMessageDB($answer->getText());
+                            $this->stopConvo();
+                        }
+                        if ($found != 1){
+                            if ($answer->isInteractiveMessageReply()){
+                                return $this->repeat();            
+                            }else{
+                                $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                                return $this->repeat();  
+                            }                         
+                            //$this->allowNLP($answer);                
+                        }
+                    });
+                    //$this->askMainMenu($otherEndMenus);
+        }else{
+            $otherEndMenus = DB::table("end_selections")->where("subcategory",$question->category_id)->get();
+            $mainQuestion = Question::create('Please Click Here');
+            $message = "";
+            foreach ($otherEndMenus as $key => $value) {
+                $message = $message . "," . $value->name;
+
+                if ($value->link != "" && $value->link !== NULL && $value->link != " "){
+                    $mainQuestion->addButton(Button::create($value->name_english)->value($value->name_english)->additionalParameters(["link"=>$value->link]));
+                }else{
+                    $mainQuestion->addButton(Button::create($value->name_english)->value($value->name_english));
                 }
             }
-            if ($this->checkIfValid($answer->getText(),"Menu Utama") == "valid"){
-                $found = 1;
-                $this->editMessageDB($answer->getText());
-                $this->askMainMenu();
-            }
-            if ($this->checkIfValid($answer->getText(),"Tamatkan Sesi") == "valid"){
-                $found = 1;
-                $this->editMessageDB($answer->getText());
-                $this->stopConvo();
-            }
-            if ($found != 1){
-                if ($answer->isInteractiveMessageReply()){
-                    return $this->repeat();            
-                }else{
-                     $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                     return $this->repeat();  
-                }                         
-                //$this->allowNLP($answer);                
-            }
-        });
-        //$this->askMainMenu($otherEndMenus);
+            $mainQuestion->addButton(Button::create("Main Menu")->value("Main Menu"));
+            $mainQuestion->addButton(Button::create("End Session")->value("End Session"));
+
+            $message = $message . "," . "Menu Utama" . ',' . "Tamatkan Sesi";
+            $this->createMessageDB($message);
+
+            $this->ask($mainQuestion, function ($answer) use ($otherEndMenus,$question){
+                $found = 0;
+                foreach ($otherEndMenus as $key => $value) {
+                    
+                    if ($this->checkIfValid($value->name_english,$answer->getText()) == "valid"){
+                        $found = 1;
+                        $this->editMessageDB($value->name);
+                        if(strtolower($value->name) == "lihat rekod bayaran"){
+                            $this->say("You have chosen " . $answer->getText());
+                            $this->ask("Sila masukkan nombor myKad anda (tanpa '-')", function ($answer) use ($value,$question){
+                                if (is_numeric($answer->getText()) === true){
+                                    $this->callApi(1,$answer->getText(),$question);
+                                }else{
+                                    return $this->repeat();
+                                }
+
+                            });
+                            
+                        }
+                        
+                    }
+                }
+                if ($this->checkIfValid($answer->getText(),"Main Menu") == "valid"){
+                    $found = 1;
+                    $this->editMessageDB($answer->getText());
+                    $this->askMainMenu();
+                }
+                if ($this->checkIfValid($answer->getText(),"End Session") == "valid"){
+                    $found = 1;
+                    $this->editMessageDB($answer->getText());
+                    $this->stopConvo();
+                }
+                if ($found != 1){
+                    if ($answer->isInteractiveMessageReply()){
+                        return $this->repeat();            
+                    }else{
+                        $this->say("Sorry, I didn't understand. Please try the menu below");
+                        return $this->repeat();  
+                    }                         
+                    //$this->allowNLP($answer);                
+                }
+            });
+            //$this->askMainMenu($otherEndMenus);
+        }
+        
     }
     protected function processQuestion($subcat){
         if (str_contains($subcat->question,"{calculated}") === true){
             $this->processCalculatedQuestion($subcat);
         }else{
+            if ($this->language == "English"){
+              $subcat->question = $subcat->question_english;
+              $subcat->button = $subcat->button_english;
+            }
             $this->prepareQuestion($subcat);
         }        
     }
@@ -927,8 +1321,14 @@ class OnboardingConversation extends Conversation
         $logic_temp = $this->replaceTheTags($subcat->logic);
        //var_dump(str_replace(" ","",$logic_temp));
         $calculated = $this->calculate(str_replace(" ","",$logic_temp));
-        
-        $subcat->question = str_replace("{calculated}",$calculated,$subcat->question);
+
+        if ($this->language == "Bahasa Malaysia"){
+             $subcat->question = str_replace("{calculated}",$calculated,$subcat->question);
+        }else{
+            $subcat->question = str_replace("{calculated}",$calculated,$subcat->question_english);
+            $subcat->button = $subcat->button_english;
+        }
+               
         $this->prepareQuestion($subcat);
     }
     protected function justDoCalculationOnly($logic){
@@ -938,8 +1338,21 @@ class OnboardingConversation extends Conversation
     }
     protected function prepareQuestion($question){
         if($question->requiredAnswers === null || $question->requiredAnswers == "" || $question->requiredAnswers == " "){
-            $this->say($question->question);
-            $this->getEndingMenu($question);
+            if($question->button === null || $question->button == "" || $question->button == " "){
+                $this->say($question->question); 
+           
+            }else{
+                $QQuestion = Question::create($question->question);
+                $QQuestion->addButton(Button::create($question->button)->value($question->button)->additionalParameters(["link"=>$question->link]));
+                $this->ask($QQuestion, function ($answer){     
+                    if($answer->isInteractiveMessageReply()){         
+                        
+                    }else{
+                        $this->repeat();
+                    }
+                });     
+            }      
+            $this->getEndingMenu($question);  
         }else{
             if ($question->link !== NULL && $question->link != "" && $question->link != " "){
                 $this->createMessageDB($question->button);
@@ -950,9 +1363,11 @@ class OnboardingConversation extends Conversation
         }
     }    
     protected function askQuestion($question){
+      
         if ($question->button == "" || $question->button == " " || $question->button === NULL){
             if ($question->requiredAnswers == "number"){
                 if ($question->logic == "" || $question->logic == " " || $question->logic === NULL){
+        
                             $this->ask($question->question, function ($answer) use ($question){                             
                                         if (is_numeric($answer->getText()) === true ){  
                                             $this->editMessageDB($answer->getText());                                      
@@ -1060,7 +1475,7 @@ class OnboardingConversation extends Conversation
 
                 $this->ask($thequestion, function ($answer) use ($question){
                     if ($question->link == ""){
-                        if ($this->checkIfValid($answer->getText(),$question->requiredAnswers) == "valid"){
+                        if ($this->checkIfValid($answer->getText(),$question->button) == "valid"){
                             $this->editMessageDB($answer->getText());   
                             if($question->trueRoute === NULL || $question->trueRoute == ""){
                                 $this->getEndingMenu($question);

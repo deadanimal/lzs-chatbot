@@ -64,6 +64,15 @@ export class botsubcategoryService {
         ); 
       } 
       
+      deleteZ(id : number):Observable<any> {
+        let tempUrl = this.botSubcategoryUrl + 'deleteZ'
+        return this.http.post<any[]>(tempUrl,{'id': id}).pipe(
+          tap((res) => {           
+             
+          })
+        ); 
+      } 
+
       deleteMain(id : number):Observable<any[]> {
         let tempUrl = this.botSubcategoryUrl + 'deleteMain'
         return this.http.post<any[]>(tempUrl,{'id': id}).pipe(
@@ -93,6 +102,16 @@ export class botsubcategoryService {
           })
         ); 
       }
+      
+      addz(body : any):Observable<any> {
+        let tempUrl = this.botSubcategoryUrl + 'addZ'
+
+        return this.http.post<any[]>(tempUrl,body).pipe(
+          tap((res) => {           
+             
+          })
+        ); 
+      }
 
       editq(body : any):Observable<any> {
         let tempUrl = this.botSubcategoryUrl + 'editQ'
@@ -103,5 +122,14 @@ export class botsubcategoryService {
           })
         ); 
       }
-  
+      
+      editz(body : any):Observable<any> {
+        let tempUrl = this.botSubcategoryUrl + 'editZ'
+
+        return this.http.post<any[]>(tempUrl,body).pipe(
+          tap((res) => {           
+             
+          })
+        ); 
+      }
   }

@@ -22,7 +22,7 @@ class BotCategoryController extends Controller
 
     public function index(Request $request)
     {
-        $bot_category = DB::table('bot_category')->get();
+        $bot_category = DB::table('bot_category')->orderBy("id",'asc')->get();
         foreach ($bot_category as $key => $value) {
             $subcategories = DB::table('bot_subcategories')->where("bot_category_id",$value->id)->get();            
             $value->subCategories = $subcategories;
@@ -34,6 +34,7 @@ class BotCategoryController extends Controller
     {
         $bot_category = new BotCategory();
         $bot_category->category_name = $request->name;
+        $bot_category->category_name_english = $request->englishname;
         $bot_category->delete = 1;
         $bot_category->save();
         $audit_c = new AuditController(); 
@@ -44,6 +45,7 @@ class BotCategoryController extends Controller
     public function addSubcategory(Request $request){
         $new = new BotSubCategory();
         $new->sub_category_name = $request->name;
+        $new->sub_category_name_english = $request->englishname;
         $new->bot_category_id = $request->id;
         $new->delete = 1;
         $new->has_sub = 0;
@@ -72,6 +74,7 @@ class BotCategoryController extends Controller
     public function updateBotCategory(Request $request){
         $bot_category = BotCategory::find($request->id);
         $bot_category->category_name = $request->name;
+        $bot_category->category_name_english = $request->englishname;   
         $bot_category->save();
         $audit_c = new AuditController(); 
         $audit_c->addAudit("update","update sub category(id: {$bot_category->id})");

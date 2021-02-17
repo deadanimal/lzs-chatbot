@@ -131,6 +131,10 @@
 					<label class="form-control-label">Category Name</label>
 					<input class="form-control" formControlName="name">
 				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="englishname">
+				</div>
 			</form>
 		</div>
 	
@@ -162,6 +166,10 @@
 					<label class="form-control-label">Sub Category Name</label>
 					<input class="form-control" formControlName="name">
 				</div>
+				<div class="form-group">
+					<label class="form-control-label">English Name</label>
+					<input class="form-control" formControlName="englishname">
+				</div>
 			</form>
 		</div>
 	
@@ -188,12 +196,16 @@
 		</div>
 	
 		<div class="modal-body">
-			<form [formGroup]="updateForm">
-				<div class="form-group">
-					<label class="form-control-label">Category Name</label>
-					<input class="form-control" formControlName="name">
-				</div>
-			</form>
+				<form [formGroup]="updateForm">
+					<div class="form-group">
+						<label class="form-control-label">Category Name</label>
+						<input class="form-control" formControlName="name">
+					</div>
+					<div class="form-group">
+						<label class="form-control-label">English Name</label>
+						<input class="form-control" formControlName="englishname">
+					</div>
+				</form>				
 		</div>
 	
 		<div class="modal-footer">

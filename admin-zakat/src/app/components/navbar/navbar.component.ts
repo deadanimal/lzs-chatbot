@@ -189,11 +189,11 @@ export class NavbarComponent implements OnInit {
                       
                   }
               }); 
-            }, 30000);    
+            }, 180000); //30000    
 
               Swal.fire({
                 title: 'You Have Received Chat Request <br><br>' + "Chosen Language: " + res[0].language + "<br>In Queue: " + res[0].waitcount,
-                timer: 60000,
+                timer: 240000, //60000
                 confirmButtonText: 'Accept',
                 allowOutsideClick: false,
               }).then((result) => {

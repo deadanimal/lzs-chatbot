@@ -14,22 +14,23 @@ import { AuthGuard } from "../../shared/guard/auth.guard";
 export const AdminRoutes: Routes = [
   {
     path: "",
+    canActivateChild: [AuthGuard],
     children: [
       {
         path: "dashboard",
-        canActivate: [AuthGuard],
         component: DashboardComponent,
       },
       {
         path: "management",
-        canActivateChild: [AuthGuard] ,
         children: [
           {
             path: "audit-trails",
+            canActivate: [AuthGuard],
             component: ManagementAuditComponent,
           },
           {
             path: "user",
+            canActivate: [AuthGuard],
             component: ManagementUserComponent,
           },
           {
@@ -48,7 +49,6 @@ export const AdminRoutes: Routes = [
       },
       {
         path: "report",
-        canActivateChild: [AuthGuard] ,
         children: [
           {
             //path: 'live-chat-history',
@@ -67,7 +67,6 @@ export const AdminRoutes: Routes = [
       },
       {
         path: "chat",
-        canActivate: [AuthGuard],
         component: ChatComponent,
       },
     ],

@@ -60,13 +60,13 @@ export class HttpTokenInterceptor implements HttpInterceptor {
             headersConfig['Authorization'] = `Bearer ${token}`;
        }
             // console.log(headersConfig)     
-                console.log('Intercepting...')
+               // console.log('Intercepting...')
 
                 const request = req.clone({ setHeaders: headersConfig });
                 return next.handle(request).pipe(
                     map((event: HttpEvent<any>) => {
                         if (event instanceof HttpResponse) {
-                            console.log('Event: ', event);
+                           // console.log('Event: ', event);
                         }
                         return event;
                     }),

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
-$DATABASE_URL = parse_url('postgres://sdvclldgvekikj:7b8ce2f5e2b02e9fd83555449e2e49a0f7d15c45e99f2ce476fe2d17565f41de@ec2-54-166-114-48.compute-1.amazonaws.com:5432/dc3k10eqvsiobr');
+$DATABASE_URL = parse_url('postgresql://api:uhhxlcjuscps90wf@project-do-user-812878-0.a.db.ondigitalocean.com:25060/lzs-chatbot?sslmode=require');
 return [
 
     /*

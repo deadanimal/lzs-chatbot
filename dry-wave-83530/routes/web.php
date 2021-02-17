@@ -48,6 +48,7 @@ Route::group(['middleware' => 'api','prefix' => 'api'], function(){
     Route::post('dynamicvariable/delete', 'DynamicVariableController@delete');    
     Route::post('dynamicvariable/update', 'DynamicVariableController@update');    
     Route::get('botSubcategory/index', 'BotSubcategoryController@index');
+    Route::get('botSubcategory/indexEnding', 'BotSubcategoryController@indexEnding');
     Route::post('botSubcategory/addSubCategory', 'BotSubcategoryController@addSubCategory');
     Route::post('botSubcategory/delete', 'BotSubcategoryController@delete');    
     Route::post('botSubcategory/update', 'BotSubcategoryController@update');    
@@ -55,7 +56,10 @@ Route::group(['middleware' => 'api','prefix' => 'api'], function(){
     Route::post('botSubcategory/editMain', 'BotSubcategoryController@editMain');
     Route::post('botSubcategory/addQ','BotSubcategoryController@addQ');    
     Route::post('botSubcategory/deleteQ','BotSubcategoryController@deleteQ');    
-    Route::post('botSubcategory/editQ','BotSubcategoryController@editQ');    
+    Route::post('botSubcategory/editQ','BotSubcategoryController@editQ');
+    Route::post('botSubcategory/addZ','BotSubcategoryController@addZ');    
+    Route::post('botSubcategory/deleteZ','BotSubcategoryController@deleteZ');    
+    Route::post('botSubcategory/editZ','BotSubcategoryController@editZ');       
     Route::post('livechat/toggle','LiveChatController@toggle');
     Route::get('livechat/checkToggle','LiveChatController@checkToggle');
     Route::post('livechat/toggleLang','LiveChatController@toggleLang');
