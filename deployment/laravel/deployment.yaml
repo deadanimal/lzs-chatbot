@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lzs-chatbot-chat-deployment
+  labels:
+    app: lzs-chatbot-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lzs-chatbot-chat
+  template:
+    metadata:
+      labels:
+        app: lzs-chatbot-chat
+    spec:
+      containers:
+      - name: lzs-chatbot-chat
+        image: syafiqpipe/lzs-chatbot-chat:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5100
+        env:
+        - name: DATABASE_URL
+          value: postgresql://api:uhhxlcjuscps90wf@project-do-user-812878-0.a.db.ondigitalocean.com:25060/lzs-chatbot?sslmode=require
