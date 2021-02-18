@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lzs-chatbot-chat-deployment
+  labels:
+    app: lzs-chatbot-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lzs-chatbot-chat
+  template:
+    metadata:
+      labels:
+        app: lzs-chatbot-chat
+    spec:
+      containers:
+      - name: lzs-chatbot-chat
+        image: syafiqpipe/lzs-chatbot-chat:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5100
+        env:
+        - name: DB_HOST
+          value: localhost
+        - name: DB_DATABASE
+          value: laravel_aws_eks
+        - name: DB_USERNAME
+          value: app 
+        - name: DB_PASSWORD
+          value: password
+      - name: mysql
+        image: mysql:5 
+        env:
+        - name: MYSQL_DATABASE
+          value: laravel_aws_eks
+        - name: MYSQL_USER
+          value: app
+        - name: MYSQL_PASSWORD
+          value: password 
+        - name: MYSQL_ROOT_PASSWORD
+          value: password 
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
