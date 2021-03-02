@@ -79,12 +79,17 @@ class RegisterController extends Controller
         }
 
         $data = array();
-   
-        Mail::send('emailCred', ["email"=>$request->email,"password"=>$request->password,"website"=>env('ADMIN_ZAKAT_URL')], function($message) use ($request){
-            $message->to($request->email, 'Registration Details')->subject("Registration Details");
-            $message->from('Admin-Zakat@AdminZakat.com','Admin-Zakat');
-        });
-
+        
+        try {
+                //code...   
+            Mail::send('emailCred', ["email"=>$request->email,"password"=>$request->password,"website"=>env('ADMIN_ZAKAT_URL')], function($message) use ($request){
+                $message->to($request->email, 'Registration Details')->subject("Registration Details");
+                $message->from('maklumbalasaduan@zakatselangor.com.my','maklumbalasaduan@zakatselangor.com.my');
+            });
+        } catch (\Throwable $th) {
+           // var_dump($th);
+        }
+     
         return response()->json(["status"=>"success"],200);
     }
 }

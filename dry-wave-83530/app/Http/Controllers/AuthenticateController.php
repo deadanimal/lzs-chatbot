@@ -223,7 +223,7 @@ public function sendResetLink(Request $request){
         
         Mail::send('resetMail', ["link"=>$link], function($message) use ($user){
             $message->to($user->email, 'Reset Password Link')->subject("Reset Password Link");
-            $message->from('Admin-Zakat@AdminZakat.com','Admin-Zakat');
+            $message->from('maklumbalasaduan@zakatselangor.com.my','maklumbalasaduan@zakatselangor.com.my');
         });
 
         return response()->json(['status'=>"success"]);
