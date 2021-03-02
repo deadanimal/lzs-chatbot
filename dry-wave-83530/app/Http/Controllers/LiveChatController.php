@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Event;
 use JWTAuth;
 use Tymon\JWTAuthExceptions\JWTException;
 use DB;
@@ -77,7 +76,7 @@ class LiveChatController extends Controller
                 $adminbusy->userid = $c->agentId;
                 $adminbusy->save();
               
-                return response()->json(["status"=>"success"],200);
+                return response()->json(["status"=>"success","name"=>$c->name,"language"=>$c->languageOfChoice],200);
             }      
         }else{
             $c = Customer::find($userId[0]->userid);
@@ -90,13 +89,15 @@ class LiveChatController extends Controller
             $adminbusy = new AdminBusy();
             $adminbusy->userid = $c->agentId;
             $adminbusy->save();
-            return response()->json(["status"=>"success"],200);
+            return response()->json(["status"=>"success","name"=>$c->name,"language"=>$c->languageOfChoice],200);
         }
     }
 
     public function agentMsg(Request $request){        
         $user = auth('api')->user();
-        $c = Customer::where("agentId",$user->id)->latest()->get();
+        if ($request->userId == ""){
+            $c = Customer::where("agentId",$user->id)->latest()->get();
+        }     
         $m = new Conversationz();
         $m->message = "empty";        
         $m->clientId = $user->id;
@@ -195,7 +196,8 @@ class LiveChatController extends Controller
         // }
         $altC->clientid = $request->userId == "" ? $c[0]->id : $request->userId;
         $altC->agentid = $user->id;
-        $altC->message = $request->message;
+        $c[0]->languageOfChoice == "English" ? $altC->message = "Please click 1 to 5 for our service rating" : $altC->message = $request->message;
+        //$altC->message = $request->message;
         $altC->save();
         $ab = AdminBusy::find($user->id);
         $ab->delete();
@@ -205,15 +207,21 @@ class LiveChatController extends Controller
     public function dltAndNotifyClient(Request $request){
         $l = LiveChatNotification::where('who',"superadmin")->first();
         if ($l !== NULL){
+            $lasm = "Harap Maaf, tidak dapat melayan anda. Sila cuba sebentar lagi.";
+            if ($l->language == "English"){
+                $lasm = "Sorry, unable to serve you. Please try again later.";
+            }
             $l->delete();
             $altC = new ConversationId();
             $altC->receipent = "clientRejected";
             $altC->clientid = $request->userId;
             $altC->agentid = 0;
-            $altC->message = "Harap Maaf, tidak dapat melayan anda. Sila cuba sebentar lagi.";
+            $altC->message = $lasm;
             $altC->save();
+            return response()->json(["status"=>"success"]);
+        }else{
+            return response()->json(["status"=>"accepted"]);
         } 
        
-        return response()->json(["status"=>"success"]);
     }
 }

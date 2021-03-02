@@ -4,8 +4,9 @@
 
 export const environment = {
   production: true,
-  //baseUrl: 'http://botman.test/',
-   baseUrl: 'https://dry-wave-83530.herokuapp.com/public/',
+  //baseUrl: 'http://192.168.0.103/botman/public/',
+   //baseUrl: 'http://botman.test/',
+  baseUrl: 'https://dry-wave-83530.herokuapp.com/public/',
   mapbox: {
     accessToken: 'pk.eyJ1IjoiYWZlZXpheml6IiwiYSI6ImNqNjJ6anlhYzA0bTczM3FvYnppbDh4eTEifQ.AdDRr42bNfNJvQENLrE6eg' // Your access token goes here
   }

@@ -40,7 +40,7 @@ export class userratingComponent implements OnInit {
   }
 
   setDate(event) {
-    console.log(event);
+    //console.log(event);
   }
 
   exportExcel() {
@@ -65,12 +65,13 @@ export class userratingComponent implements OnInit {
 
   exportPdf() {
     var rows = [];
-
+    var totalX = 0;
+    var totalC = 0;
     rows.push(["Date", "Name", "Email", "Phone Number", "Feedback", "Rating"]);
 
     this.tableTemp.forEach((x) => {
-      console.log(x);
-
+      totalX = totalX + x.star;
+      totalC = totalC + 1;
       rows.push([
         x.created_at,
         x.name,
@@ -80,6 +81,15 @@ export class userratingComponent implements OnInit {
         x.star,
       ]);
     });
+
+    rows.push([
+     "",
+      "",
+      "",
+      "",
+      "Average",
+      totalX/totalC,
+    ]);
 
     var dd = {
       content: [

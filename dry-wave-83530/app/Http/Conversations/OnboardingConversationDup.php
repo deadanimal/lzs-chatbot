@@ -25,9 +25,8 @@ use DB;
 use \Datetime;
 use App\User;
 use App\AdminBusy;
-use stdClass;
 
-class OnboardingConversation extends Conversation
+class OnboardingConversationdup extends Conversation
 {
     //use Notifiable;
 
@@ -41,7 +40,6 @@ class OnboardingConversation extends Conversation
     protected $mainSubCategories = NULL;
     protected $nlpCategories = [];
     protected $conversationId;
-    protected $iteration = 1; //remove this later
 
     public function run()
     {
@@ -56,7 +54,7 @@ class OnboardingConversation extends Conversation
                         ->addButton(Button::create('Bahasa Malaysia')->value('Bahasa Malaysia'))
                         ->addButton(Button::create('English')->value('English'));
         
-                   // $this->fakeinsert(); //remove this later
+                    // $this->fakeinsert(); //remove this later
                                 // $origin = new DateTime($recentMessage->sendtime);
                                 // $target = new DateTime();
                                 // $interval = $origin->diff($target);
@@ -130,9 +128,9 @@ class OnboardingConversation extends Conversation
                         }else{
 
                         // $this->editMessageDB($answer->getText());
-                            // $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                            // return $this->repeat();
-                            $this->allowNLP($answer);
+                            $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                            return $this->repeat();
+                            //$this->allowNLP($answer);
                         }  
                     }else{
                         if ($this->checkIfValid("Main Categories",$answer->getText()) == "valid"){
@@ -166,7 +164,7 @@ class OnboardingConversation extends Conversation
         $record = new Customer();
         //$record->firsttime = new DateTime();
         $record->phonenumber = 012;
-        $record->name = "hellokitty";
+        $record->name = "ygstest";
         $record->email = "testemail@email.com";
         $record->languageOfChoice = "bahasa malaysia";        
         $record->save();
@@ -189,13 +187,8 @@ class OnboardingConversation extends Conversation
                      $ur = new UserReview();
                      $ur->userid = $this->userId;
                      $ur->star = $answer->getText();
-                    
-                     $thequestion = Question::create("Sila bagi maklum balas terhadap perkhidmatan kami")
-                    ->addButton(Button::create("Diselesaikan")->value("Diselesaikan"))
-                    ->addButton(Button::create("Separa Diselesaikan")->value("Separa Diselesaikan"))
-                    ->addButton(Button::create("Tidak Diselesaikan")->value('Tidak Diselesaikan'));            
-
-                    $this->ask($thequestion, function ($answer) use ($ur){
+    
+                    $this->ask("Sila bagi maklum balas terhadap perkhidmatan kami", function ($answer) use ($ur){
                        
                         $u = Customer::find($this->userId);
                         $u->lasttime = new DateTime();
@@ -203,7 +196,8 @@ class OnboardingConversation extends Conversation
                         $ur->save();
                         $this->say("Sekian, Terima Kasih. Harap saya dapat bantu anda.");
                         return true;     
-                    });                     
+                    });
+                     
                    
                 }else{
                     return $this->repeat();
@@ -224,13 +218,8 @@ class OnboardingConversation extends Conversation
                      $ur = new UserReview();
                      $ur->userid = $this->userId;
                      $ur->star = $answer->getText();
-
-                     $thequestion = Question::create("Please Give Your Feedback For Our Service")
-                     ->addButton(Button::create("Resolved")->value("Resolved"))
-                     ->addButton(Button::create("Partially Resolved")->value("Partially Resolved"))
-                     ->addButton(Button::create("Not Resolved")->value('Not Resolved'));   
-
-                    $this->ask($thequestion, function ($answer) use ($ur){
+    
+                    $this->ask("Please Give Your Feedback For Our Service", function ($answer) use ($ur){
                        
                         $u = Customer::find($this->userId);
                         $u->lasttime = new DateTime();
@@ -350,14 +339,14 @@ class OnboardingConversation extends Conversation
             $thequestion = Question::create("Anda Mahu Teruskan Pertanyaan?")
             ->addButton(Button::create("TIDAK")->value("TIDAK"))
             ->addButton(Button::create("YA")->value("YA"));
-            //$this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
+            $this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
             $this->ask($thequestion, function ($answer){
                 if ($this->checkIfValid($answer->getText(),"YA") == "valid"){
-                //    $this->editMessageDB($answer->getText());
+                    $this->editMessageDB($answer->getText());
                     $this->askMainMenu();   
                 }
                 else if ($this->checkIfValid($answer->getText(),"TIDAK") == "valid"){
-                //    $this->editMessageDB($answer->getText());
+                    $this->editMessageDB($answer->getText());
                     $this->doFeedback();   
                 }else{
                     return $this->repeat();
@@ -369,14 +358,14 @@ class OnboardingConversation extends Conversation
             $thequestion = Question::create("Do You Want To Continue?")
             ->addButton(Button::create("No")->value("NO"))
             ->addButton(Button::create("Yes")->value("YES"));
-           // $this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
+            $this->createMessageDB("Anda Mahu Teruskan Pertanyaan?");
             $this->ask($thequestion, function ($answer){
                 if ($this->checkIfValid($answer->getText(),"YES") == "valid"){
-                  //  $this->editMessageDB($answer->getText());
+                    $this->editMessageDB($answer->getText());
                     $this->askMainMenu();   
                 }
                 else if ($this->checkIfValid($answer->getText(),"NO") == "valid"){
-                  //  $this->editMessageDB($answer->getText());
+                    $this->editMessageDB($answer->getText());
                     $this->doFeedback();   
                 }else{
                     return $this->repeat();
@@ -472,13 +461,13 @@ class OnboardingConversation extends Conversation
             }
   
             else{
-                // if ($this->language == "Bahasa Malaysia"){
-                //     $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                // }else{
-                //     $this->say("Sorry, I couldn't understand. Please Try Options Below");           
-                // }
-                // return $this->repeat();
-                $this->allowNLP($answer);
+                if ($this->language == "Bahasa Malaysia"){
+                    $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                }else{
+                    $this->say("Sorry, I couldn't understand. Please Try Options Below");           
+                }
+                return $this->repeat();
+                //$this->allowNLP($answer);
             }           
         });
     }
@@ -744,250 +733,67 @@ class OnboardingConversation extends Conversation
            
     }
 
-    protected function findUpperCat($id){
-        foreach ($this->mainSubCategories as $key => $value) {
-             if ($value->id == $id){
-                 return $value;
-             }
-        }
-    }
-
     protected function allowNLP($answer){
-      
-        //$this->editMessageDB($answer->getText());
+        $this->editMessageDB($answer->getText());
         $array_of_possibilities = $this->donlplikesearch($answer->getText());
-    
-
+        //var_dump($array_of_possibilities);
                 if (count($array_of_possibilities) < 1){
-                    //$this->createMessageDB("Saya tidak faham,Sila cuba lagi atau gunakan menu di bawah");
-                    if ($this->language == "English"){
-                        $this->say("I couldn't understand, Please try again or use the menu below");
-                    }else{
-                        $this->say("Saya tidak faham,Sila cuba lagi atau gunakan menu di bawah");
-                    }
+                    $this->createMessageDB("Saya tidak faham,Sila cuba lagi atau gunakan menu di bawah");
+                    $this->say("Saya tidak faham,Sila cuba lagi atau gunakan menu di bawah");
                     return $this->repeat();
                 }else{
-                    $count = 0;
-                    $thisone = array();
-                    $gg = 0;
-                    $ori = "";
-                    $oriId = "";
-                    $oriFlag = "";
-                    $ccount = 0;
+                    $excount = 0;
+                    $exploded = explode(" ",$answer->getText());
+                    $thisone = NULL;
                     // var_dump($array_of_possibilities);
                     // var_dump(1);
-                    if ($this->language == "English"){
-                        foreach ($array_of_possibilities as $key => $value) {
-                        
-                            if ($count < 3){
-                                if (isset($value['sub_category_id']) && isset($value['sub_category_name_english'])){
-                                    $ori = $value['sub_category_name_english'];
-                                    $oriId = $value['id'];
-                                    $oriFlag = $value['has_sub'];
-                                    while($gg != 1){
-                                        $tempe = $this->findUpperCat($value['sub_category_id']);
+                    foreach ($array_of_possibilities as $key => $value) {
+                        $count = 0;
+                        if (isset($value['sub_category_name'])){
+                            
+                            foreach ($exploded as $explo) {                            
+                                if (str_contains(strtolower($value['sub_category_name']),strtolower($explo)) === true){                               
+                                    $count = $count + 1;
+                                }
+                            }
+                            if ($count == 0){
+                                foreach ($this->mainSubCategories as $v) {
+                                    if ($v->sub_category_name == $value['sub_category_name']){
                                         
-                                        if ($tempe !== NULL){
-                           
-                                            
-                                            if ($tempe->sub_category_id === NULL || $tempe->sub_category_id == ""){
-                                                $gg = 1;
-                                                $tempe2 = (object)["sub_category_name_english"=>$tempe->sub_category_name_english . " => " . $ori,"id"=>$oriId,"has_sub"=>$oriFlag];
-                    
-                                                $brokenwords = explode(' ',$answer->getText());
-    
-                                                if(count($brokenwords) > 1){
-                                                    foreach ($brokenwords as $key => $value) {
-                                                        $result = stripos($tempe2->sub_category_name_english,$value);
-                                                        if ($result !== FALSE){
-                                                            $ccount = 1;
-                                                        }
-                                                    }
-                                                    $result = $ccount == 1 ? TRUE : FALSE;
-                                                }else{
-                                                    $result = stripos($tempe2->sub_category_name_english,$answer->getText());
-                                                }
-    
-    
-                                                if ($result !== FALSE){
-                                                        $foundd = 0;
-                                                    foreach ($thisone as $key => $value) {
-                                                        if ($value->sub_category_name_english == $tempe2->sub_category_name_english){
-                                                            $foundd = 1;
-                                                        }
-                                                    }
-                                                    if ($foundd != 1){
-                                                        array_push($thisone,$tempe2);
-                                                    }
-                                                }                                            
-                                                
-                                            }else{
-                                                $value['sub_category_id'] = $tempe->sub_category_id;
-                                            }
-                                        }else{
-                                            $gg = 1;
-                                        }
-                                    } 
-                                    $gg = 0;                               
-                                
-                            }else{
-                               
-                                $count = 3;
+                                        $thisone = $v;
+                                        
+                                    }
+                                }
+                            }
+                            
+                            if ($excount < $count){
+                                $excount = $count;
                                 foreach ($this->mainSubCategories as $v) {
                                     if ($v->id == $value['id']){
-                                        $thisone = $v;                                    
+                                        
+                                        $thisone = $v;
+                                        
                                     }
                                 }
-                                
+                            }
+                        }else{
+                            
+                            foreach ($this->mainSubCategories as $v) {
+                                if ($v->id == $value['id']){
+                                    $thisone = $v;                                    
+                                }
                             }
                         }
-                        $count  = $count + 1;
-                                 
-                        }
                         
-    
-                        //do checking
-                      if (!$thisone instanceof stdClass && count($thisone)<1){
-                        $this->say("I couldn't understand, Please try again or use the menu below");
-                        $this->repeat();
-                      }else{
-                            
-                            if ($thisone instanceof stdClass){
-                                if ($thisone->has_sub == 1){
-                                    $this->processSubSubCategories($thisone->id);     
-                                }else{
-                                    $this->getFirstQuestion($thisone);
-                                }                            
-                                
-                            }else{
-                                if (count($thisone) < 2){
-                                    if ($thisone[0]->has_sub == 0){
-                                        $this->getFirstQuestion($thisone[0]);
-                                    }else{
-                                        $this->processSubSubCategories($thisone[0]->id);
-                                    }        
-                                }
-                                else{
-                                    
-                                    if (count($thisone) < 2){
-                                    // var_dump($thisone);
-                                        $this->processSubSubCategories($thisone[0]->id); 
-                                    }else{
-                                        $this->askSubCategories($thisone); 
-                                    }
-                                        
-                                }                                          
-                            }  
-                      }
-
-                    }else{
-                        foreach ($array_of_possibilities as $key => $value) {
-                        
-                            if ($count < 3){
-                                if (isset($value['sub_category_id']) && isset($value['sub_category_name'])){
-                                    $ori = $value['sub_category_name'];
-                                    $oriId = $value['id'];
-                                    $oriFlag = $value['has_sub'];
-                                    while($gg != 1){
-                                        $tempe = $this->findUpperCat($value['sub_category_id']);
-                                        
-                                        if ($tempe !== NULL){
-                           
-                                            
-                                            if ($tempe->sub_category_id === NULL || $tempe->sub_category_id == ""){
-                                                $gg = 1;
-                                                $tempe2 = (object)["sub_category_name"=>$tempe->sub_category_name . " => " . $ori,"id"=>$oriId,"has_sub"=>$oriFlag];
-                    
-                                                $brokenwords = explode(' ',$answer->getText());
-    
-                                                if(count($brokenwords) > 1){
-                                                    foreach ($brokenwords as $key => $value) {
-                                                        $result = stripos($tempe2->sub_category_name,$value);
-                                                        if ($result !== FALSE){
-                                                            $ccount = 1;
-                                                        }
-                                                    }
-                                                    $result = $ccount == 1 ? TRUE : FALSE;
-                                                }else{
-                                                    $result = stripos($tempe2->sub_category_name,$answer->getText());
-                                                }
-    
-    
-                                                if ($result !== FALSE){
-                                                        $foundd = 0;
-                                                    foreach ($thisone as $key => $value) {
-                                                        if ($value->sub_category_name == $tempe2->sub_category_name){
-                                                            $foundd = 1;
-                                                        }
-                                                    }
-                                                    if ($foundd != 1){
-                                                        array_push($thisone,$tempe2);
-                                                    }
-                                                }                                            
-                                                
-                                            }else{
-                                                $value['sub_category_id'] = $tempe->sub_category_id;
-                                            }
-                                        }else{
-                                            $gg = 1;
-                                        }
-                                    } 
-                                    $gg = 0;                               
-                                
-                            }else{
-                               
-                                $count = 3;
-                                foreach ($this->mainSubCategories as $v) {
-                                    if ($v->id == $value['id']){
-                                        $thisone = $v;                                    
-                                    }
-                                }
-                                
-                            }
-                        }
-                        $count  = $count + 1;
-                                 
-                        }
-                        
-    
-                        //do checking
-                      if (!$thisone instanceof stdClass && count($thisone)<1){
-                        $this->say("Saya tidak faham,Sila cuba lagi atau gunakan menu di bawah");
-                        $this->repeat();
-                      }else{
-                            
-                            if ($thisone instanceof stdClass){
-                                if ($thisone->has_sub == 1){
-                                    $this->processSubSubCategories($thisone->id);     
-                                }else{
-                                    $this->getFirstQuestion($thisone);
-                                }                            
-                                
-                            }else{
-                                if (count($thisone) < 2){
-                                    if ($thisone[0]->has_sub == 0){
-                                        $this->getFirstQuestion($thisone[0]);
-                                    }else{
-                                        $this->processSubSubCategories($thisone[0]->id);
-                                    }        
-                                }
-                                else{
-                                    
-                                    if (count($thisone) < 2){
-                                    // var_dump($thisone);
-                                        $this->processSubSubCategories($thisone[0]->id); 
-                                    }else{
-                                        $this->askSubCategories($thisone); 
-                                    }
-                                        
-                                }                                          
-                            }  
-                      }
-
                     }
-                 
-      
-           
+                    
+                    if ($thisone->has_sub == 1){
+                        $nextSubs = DB::table("bot_subcategories")->where("sub_category_id",$thisone->id)->get();
+                        $this->askSubCategories($nextSubs);
+                    }else{
+                        
+                        $this->getFirstQuestion($thisone);
+                    }                   
                 }
 
     }
@@ -1000,7 +806,7 @@ class OnboardingConversation extends Conversation
         //$this->tempId = $id;
       //  array_push($this->tempIds,$id);
         //$this->iteration = $this->iteration + 1;
-        $subcats = DB::table("bot_subcategories")->where("sub_category_id",$id)->orderBy("id","ASC")->get();
+        $subcats = DB::table("bot_subcategories")->where("sub_category_id",$id)->get();
         $cc = DB::table("bot_subcategories")->where("id",$id)->select("bot_subcategories.header","bot_subcategories.headerE")->first();
         $this->askSubCategories($subcats,$cc);
     }
@@ -1020,7 +826,7 @@ class OnboardingConversation extends Conversation
                 $this->askMainMenu();
             }         
     }
-    protected function askSubCategories($subcats,$m="",$nn=""){
+    protected function askSubCategories($subcats,$m=""){
         if ($this->language == "Bahasa Malaysia"){
                 
                 if ($m != "" && $m->header != "" && $m->header != " "){
@@ -1076,9 +882,9 @@ class OnboardingConversation extends Conversation
                                 }                   
                             }else{
                                 
-                                // $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                                // return $this->repeat();
-                                    $this->allowNLP($answer);
+                                $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                                return $this->repeat();
+                                    //$this->allowNLP($answer);
                                 
                             }  
                     }
@@ -1281,9 +1087,8 @@ class OnboardingConversation extends Conversation
                             if ($answer->isInteractiveMessageReply()){
                                 return $this->repeat();            
                             }else{
-                                // $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                                // return $this->repeat();
-                                $this->allowNLP($answer);      
+                                $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
+                                return $this->repeat();  
                             }                         
                             //$this->allowNLP($answer);                
                         }
@@ -1374,8 +1179,7 @@ class OnboardingConversation extends Conversation
         }
         
     }
-    protected function processQuestion($subcat){    
-    
+    protected function processQuestion($subcat){
         if (str_contains($subcat->question,"{calculated}") === true){
             $this->processCalculatedQuestion($subcat);
         }else{
@@ -1390,12 +1194,6 @@ class OnboardingConversation extends Conversation
         // if ($id == 1){
             $mykadvalidationlink = DB::table("dynamic_variables")->where("id",2)->get();
             $displayRecordBayaranLink = DB::table("dynamic_variables")->where("id",3)->get();
-
-            $foundornot = DB::table("blocked_ic")->where('ic',$mykadNum)->first();
-            
-            if ($foundornot === FALSE || $foundornot === NULL){
-
-
             if ($id == 1){
                 $response = Http::asForm()->post($mykadvalidationlink[0]->value,[
                     'mykad' => $mykadNum,
@@ -1538,18 +1336,7 @@ class OnboardingConversation extends Conversation
                             } 
                                 if ($correctCount < 2){
                                     $this->say("Anda telah gagal untuk menjawab 2 soalan dengan betul.");
-
-                                    DB::table("blocked_ic")->insert([
-                                        "ic" => $mykadNum
-                                    ]);
-                                
-                                    $qq = Question::create('Anda Perlu Log Masuk Ke Portal EZakatOnline. Klik Butang Di Bawah')->addButton(Button::create('EZAKATONLINE')->value('EZAKATONLINE')->additionalParameters(["link"=>"https://ezo.zakatselangor.com.my/"]));
-                                        
-                                    $this->ask($qq, function($answer) use ($question){
-                                        //unlink($thepath);
-                                        $this->getEndingMenu($question);
-
-                                    });
+                                    $this->getEndingMenu($question);
                                 }else{
                                     //second api
                                     //781016145437
@@ -1597,7 +1384,7 @@ class OnboardingConversation extends Conversation
                                                     <p>Bagi pembayar zakat individu, penyata ini boleh dikemukakan kepada LHDN bagi tujuan tuntutan <b>rebat cukai</b> di bawah Seksyen 6A(J), Akta Cukai Pendapatan 1967, Bagi pembayar zakat bukan individu pula, penyata ini boleh dikemukakan kepada LHDN bagi tujuan tuntutan <b>tolakan cukai</b> di bawah Seksyen 44 (11A), Akta Cukai Pendapatan 1967.
                                                     <br><p>Penyata ini adalah cetakan komputer. Tandatangan tidak diperlukan.
                                                     <br><br><p style='color: grey; text-align: left;'>www.zakatselangor.com.my &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; zakat 1 kewajipan... berzakatlah</p>
-                                                    ";
+                                                    ";                           ;
                         
                                                     $pdfwriter->WriteHTML('<center style="text-align: center;">
                                                     <img style="width:50%" src="' . url('/') . '/zakat-sel-logo.png' . '">' 
@@ -1686,18 +1473,7 @@ class OnboardingConversation extends Conversation
 
                         if ($correctCount < 2){
                             $this->say("Anda telah gagal untuk menjawab 2 soalan dengan betul.");
-                            
-                            DB::table("blocked_ic")->insert([
-                                "ic" => $mykadNum
-                            ]);
-
-                            $qq = Question::create('Anda Perlu Log Masuk Ke Portal EZakatOnline. Klik Butang Di Bawah')->addButton(Button::create('EZAKATONLINE')->value('EZAKATONLINE')->additionalParameters(["link"=>"https://ezo.zakatselangor.com.my/"]));
-                                        
-                            $this->ask($qq, function($answer) use ($question){
-                                //unlink($thepath);
-                                $this->getEndingMenu($question);
-
-                            });
+                            $this->getEndingMenu($question);
                         }else{
                             //second api
                             //781016145437
@@ -1799,16 +1575,6 @@ class OnboardingConversation extends Conversation
     }      });
            }); 
         }
-        }else{
-
-            $qq = Question::create('Anda Perlu Log Masuk Ke Portal EZakatOnline. Klik Butang Di Bawah')->addButton(Button::create('EZAKATONLINE')->value('EZAKATONLINE')->additionalParameters(["link"=>"https://ezo.zakatselangor.com.my/"]));
-                                        
-                                            $this->ask($qq, function($answer) use ($question){
-                                                //unlink($thepath);
-                                                $this->getEndingMenu($question);
-
-                                            });
-            }
     }
     protected function q2A($position,$qq,$answer){
         $ignorethis = 0;
@@ -1981,9 +1747,9 @@ class OnboardingConversation extends Conversation
             $this->getEndingMenu($question);  
         }else{
             if ($question->link !== NULL && $question->link != "" && $question->link != " "){
-              //  $this->createMessageDB($question->button);
+                $this->createMessageDB($question->button);
             }else{
-               // $this->createMessageDB($question->question);
+                $this->createMessageDB($question->question);
             }
             $this->askQuestion($question);
         }
@@ -1996,7 +1762,7 @@ class OnboardingConversation extends Conversation
         
                             $this->ask($question->question, function ($answer) use ($question){                             
                                         if (is_numeric($answer->getText()) === true ){  
-                                           // $this->editMessageDB($answer->getText());                                      
+                                            $this->editMessageDB($answer->getText());                                      
                                             array_push($this->values,$answer->getText());
                                             foreach ($this->allQuestions as $key => $value) {
                                                 if ($value->id == $question->trueRoute){
@@ -2012,7 +1778,7 @@ class OnboardingConversation extends Conversation
                         if (is_numeric($answer->getText()) === true ){
 
                             array_push($this->values,$answer->getText());
-                           //  $this->editMessageDB($answer->getText());   
+                             $this->editMessageDB($answer->getText());   
                             if(str_contains($question->logic, '>') === true ){
                                 if ($this->readNprocessLogic($question->logic,'>') === true){
                                     foreach ($this->allQuestions as $key => $value) {
@@ -2061,7 +1827,7 @@ class OnboardingConversation extends Conversation
                     $found = 0;
                     foreach (explode(',',$question->requiredAnswers) as $key => $value) {
                         if ($this->checkIfValid($answer->getText(),$value) == "valid"){
-                         //   $this->editMessageDB($answer->getText());   
+                            $this->editMessageDB($answer->getText());   
                             $found = 1;
                             $chosenValue = $value;
                             $chosenKey = $key;
@@ -2098,20 +1864,18 @@ class OnboardingConversation extends Conversation
                  $thequestion = Question::create($question->question)
                 ->addButton(Button::create($question->button)->value($question->button));
             }           
-      
+
                 $this->ask($thequestion, function ($answer) use ($question){
-           
-                    if (($question->link == "" && $question->link !== NULL) || ($question->logic !== NULL && $question->link === NULL)){
+                    if ($question->link == ""){
                         if ($this->checkIfValid($answer->getText(),$question->button) == "valid"){
-                           // $this->editMessageDB($answer->getText());   
+                            $this->editMessageDB($answer->getText());   
                             if($question->trueRoute === NULL || $question->trueRoute == ""){
                                 $this->getEndingMenu($question);
                             }else{
                                 if(str_contains($question->logic, '>') === true ){
-                               
                                     if ($this->readNprocessLogic($question->logic,'>') === true){
                                         foreach ($this->allQuestions as $key => $value) {
-                                            if ($question->trueRoute == $value->id){                                         
+                                            if ($question->trueRoute == $value->id){
                                                 $this->processQuestion($value);
                                             } 
                                         }
@@ -2149,17 +1913,15 @@ class OnboardingConversation extends Conversation
                             return $this->repeat();
                         }
                     }else{
-                       // $this->editMessageDB($answer->getText());   
+                        $this->editMessageDB($answer->getText());   
                         if($question->trueRoute === NULL || $question->trueRoute == ""){
                             $this->getEndingMenu($question);
                         }else{
-                       
-                                foreach ($this->allQuestions as $key => $value) {
-                                    if ($question->trueRoute == $value->id){
-                                        $this->processQuestion($value);
-                                    } 
+                            foreach ($this->allQuestions as $key => $value) {
+                                if ($question->trueRoute == $value->id){
+                                    $this->processQuestion($value);
                                 } 
-                         
+                            }  
                         }
                        
                     }
@@ -2178,15 +1940,14 @@ class OnboardingConversation extends Conversation
     protected function calculate($calculations)
     {
         $stringCalc = new StringCalc();
-       // var_dump($calculations);
+
         $result = $stringCalc->calculate($calculations);
-      
-        return round($result,2);
+//var_dump($result);
+        return $result;
 
     }
     protected function readNprocessLogic($logic,$operator){     
-    
-        $logic_temp = $this->replaceTheTags($logic);
+        $logic_temp = $this->replaceTheTags($logic);   
         $brokenLogic = explode($operator,$logic_temp);
        $brokenLogic[0] = str_replace(" ","",$brokenLogic[0]);
         $brokenLogic[1] = str_replace(" ","",$brokenLogic[1]);
@@ -2195,7 +1956,6 @@ class OnboardingConversation extends Conversation
         if (str_contains($brokenLogic[0],'*') || str_contains($brokenLogic[0],'/') || str_contains($brokenLogic[0],'+') || str_contains($brokenLogic[0],'-')){
            // var_dump($brokenLogic[0]);
             //means got
-        
             $calculated_value1 = $this->calculate($brokenLogic[0]);
             
             if (str_contains($brokenLogic[1],'*') || str_contains($brokenLogic[1],'/') || str_contains($brokenLogic[1],'+') || str_contains($brokenLogic[1],'-')){
@@ -2243,14 +2003,9 @@ class OnboardingConversation extends Conversation
     protected function donlplikesearch($statement){
         
         //var_dump(json_decode($this->mainSubCategories));
-        if ($this->language == "Bahasa Malaysia"){
-            $fuse = new \Fuse\Fuse(json_decode($this->mainSubCategories, true),["keys" => ["sub_category_name"]]);
-        }else{
-            $fuse = new \Fuse\Fuse(json_decode($this->mainSubCategories, true),["keys" => ["sub_category_name_english"]]);
-        }
-         //var_dump($fuse);
+        $fuse = new \Fuse\Fuse(json_decode($this->mainSubCategories, true),["keys" => ["sub_category_name"]]);
+        // var_dump($fuse);
         return $fuse->search($statement);
 
     }
 }
-//postgresql://api:uhhxlcjuscps90wf@project-do-user-812878-0.a.db.ondigitalocean.com:25060/lzs-chatbot?sslmode=require

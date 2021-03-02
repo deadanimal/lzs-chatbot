@@ -14,10 +14,13 @@ class ReportScheduleController extends Controller
        $c=1;
        if ($c == 1){
 
-        DB::table('conversations')->whereNotNull("botMsg")->delete();
         DB::table('admin_busy')->whereNotNull("userid")->delete();
+        DB::table('conversation_id')->whereNotNull("id")->delete();
+        DB::table('live_chat_notification')->whereNotNull("id")->delete();
+        DB::table('blocked_ic')->whereNotNull("ic")->delete();
 
-        $start = Carbon::today();
+        //$start = Carbon::today();
+        $start = Carbon::yesterday();
        //$end = Carbon::today();
        $top_categories = array();
        $temp_categories = array();
@@ -94,9 +97,18 @@ class ReportScheduleController extends Controller
         //process average rating
         $avgR = 0;
         $ratings = DB::table('user_review')->whereDate('created_at',$start->toDateString())->get();
-        if (count($ratings) > 0){
-            $avgR = $ratings / count($ratings);
+        $avgRatings = 0;
+
+        foreach ($ratings as $key => $value) {
+            $avgRatings = $avgRatings + $value->star;
         }
+
+        if (count($ratings) > 0){
+            $avgR = round($avgRatings / count($ratings),1);
+        }
+        
+       // dd($avgRatings);
+        //dd(count($ratings));
 
        //sort
               
@@ -107,9 +119,9 @@ class ReportScheduleController extends Controller
          "top_4" => isset($top_categories[3]) ? $top_categories[3] : " ",
          "top_5" => isset($top_categories[4]) ? $top_categories[4] : " ",
          "date" => $start->toDateString(),
-         "averageWait" => $diffAvgWait,
+         "averageWait" => round($diffAvgWait),
          "totalUser" => $totalUsers,
-         "averageSpent" => $avgSpent,
+         "averageSpent" => round($avgSpent),
          "averageRating" => $avgR,
        ]);
        
@@ -168,11 +180,13 @@ class ReportScheduleController extends Controller
                 "top_4_name" => isset($top_categories[3]) ? $top_categories[3] : " ",
                 "top_5_name" => isset($top_categories[4]) ? $top_categories[4] : " ",
                 strtolower($start->format('l')) => $totalUsers-$existingDashboard->totalUser,
-                "averageRating" => $avgRatings,
-                "averageWait" => $diffAvgWait,
+                "averageRating" => round($avgRatings),
+                "averageWait" => round($diffAvgWait),
                 "totalUser" => $totalUsers,
-                "averageSpent" => $avgSpent,
+                "averageSpent" => round($avgSpent),
             ]);
+
+            DB::table('conversations')->whereNotNull("botMsg")->delete();
        
     }else{
         // DB::table("dashboard_report")->where('id',1)->update([
@@ -237,9 +251,14 @@ class ReportScheduleController extends Controller
         //         "averageSpent" => 44,
         //         "date" => "2021-03-04",               
         //     ]);
-        DB::table("audit_trail")->whereNotNull('action')->update([
-               "userid" => 29,            
-            ]);
+        // DB::table("audit_trail")->whereNotNull('action')->update([
+        //        "userid" => 29,            
+        //     ]);
+        DB::table("bot_questions")->whereNotNull('id')->update(
+            [
+                "delete" => 0
+            ]
+            );
     }
     } 
 

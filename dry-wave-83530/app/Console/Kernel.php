@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-       $schedule->call(new ReportScheduleController)->everyFiveMinutes();
+       $schedule->call(new ReportScheduleController)->everyMinute();
         // $schedule->command('inspire')->hourly();
     }
 

@@ -32,6 +32,7 @@ export class NavbarComponent implements OnInit {
   name: string;
   ce: any;
   dontroute:number = 0;
+  notfinish: number = 0;
 
   // Data
   user: User
@@ -63,6 +64,7 @@ export class NavbarComponent implements OnInit {
         (path: any) => {
           if (path['chat'] == "ended"){
             this.dontroute = 1;
+            this.notfinish = 0;
             this.checkForLiveChatNotification();
           }else{
             //this.checkForLiveChatNotification();    
@@ -122,7 +124,8 @@ export class NavbarComponent implements OnInit {
              this.gone()
           }else if (res.status == "success"){
             //this.checkIfEnded();
-            this.navigatePage("admin/chat")
+            console.log(res);
+            this.navigatePage("admin/chat",res.name,res.language)
           }
       }
     )
@@ -130,12 +133,17 @@ export class NavbarComponent implements OnInit {
 
   deleteLiveRequest(){
     this.ServicesService.dltAndNotifyClient(this.usserId).subscribe(
-      (res) => {
+      (res) => {        
           if (res.status == "success"){
             let title = 'Success'
             let message = 'Successfully Rejected'
             this.notifyService.openToastr(title, message)
+          }else if (res.status == "accepted"){
+            let title = 'Error'
+            let message = 'Agent Already Accepted'
+            this.notifyService.openToastr(title, message)
           }
+          this.notfinish = 0;
       }
     )
   }
@@ -144,17 +152,17 @@ export class NavbarComponent implements OnInit {
   getlcn(){
     //console.log(this.usser);
     //clearInterval(this.intervalId);
-
+    this.notfinish = 1;
     this.ServicesService.getLiveChatNotification().subscribe(
       (res) => {  
          
         if (res.status == "nothing"){
          
-        
+        this.notfinish = 0;
          //else if(res.status == "stop"){
         //   //clearInterval(this.intervalId);
          }else{    
-          console.log(res);
+          //console.log(res);
           
           this.usserId = res[0].userid;
           clearInterval(this.intervalId);
@@ -170,12 +178,16 @@ export class NavbarComponent implements OnInit {
                // console.log(result);            
                 if (result.dismiss === Swal.DismissReason.timer) {
                     this.deleteLiveRequest();
+                    
                     setTimeout(() => {
+                      this.notfinish = 0;
                       this.checkForLiveChatNotification(); 
                     }, 1000);                
                 }else{
                   this.deleteLiveRequest();
+                  
                   setTimeout(() => {
+                    this.notfinish = 0;
                     this.checkForLiveChatNotification(); 
                   }, 1000);          
                 }
@@ -189,11 +201,11 @@ export class NavbarComponent implements OnInit {
                       
                   }
               }); 
-            }, 180000); //30000    
+            }, 30000); //30000    
 
               Swal.fire({
                 title: 'You Have Received Chat Request <br><br>' + "Chosen Language: " + res[0].language + "<br>In Queue: " + res[0].waitcount,
-                timer: 240000, //60000
+                timer: 60000, //60000
                 confirmButtonText: 'Accept',
                 allowOutsideClick: false,
               }).then((result) => {
@@ -222,8 +234,10 @@ export class NavbarComponent implements OnInit {
 
   checkForLiveChatNotification(){
     this.intervalId = setInterval(()=>{
-      this.getlcn();
-    },5000);
+      if (this.notfinish == 0){
+         this.getlcn();
+      }     
+    },6000);
   }
 
   getTitle() {
@@ -240,7 +254,7 @@ export class NavbarComponent implements OnInit {
     return "Dashboard";
   }
 
-  navigatePage(path: String) {
+  navigatePage(path: String,name="",language="") {
     if (path == 'notifications') {
       return this.router.navigate(['/global/notifications'])
     }
@@ -252,6 +266,8 @@ export class NavbarComponent implements OnInit {
     }
     else if (path == 'home') {
       return this.router.navigate(['/auth/login'])
+    }else if (path == 'admin/chat'){
+      return this.router.navigate([path],{ queryParams: { name: name, language: language} })
     }
     else{
       return this.router.navigate([path]);    }

@@ -66,7 +66,7 @@ class AuthenticateController extends Controller
         $theuser = User::find($request->id);
         $theuser->delete();
         $audit_c = new AuditController(); 
-        $audit_c->addAudit("delete","delete user " . $user->email);
+        $audit_c->addAudit("delete","delete user " . $theuser->email);
         return response()->json(["status"=>"success"], 200);
     }
 

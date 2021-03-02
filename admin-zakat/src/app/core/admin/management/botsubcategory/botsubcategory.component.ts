@@ -24,6 +24,8 @@ export class botsubcategoryComponent implements OnInit {
   has_sub: number = 0;
   has_question: number = 0;
   englishName: string;
+  header: string;
+  headerE: string;
 
   constructor(private botsubcategoryService: botsubcategoryService,private router: Router,private fb: FormBuilder,private loadingBar: LoadingBarService,private modalService: BsModalService,private notifyService: NotifyService,private activatedRoute: ActivatedRoute) {
     this.activatedRoute.queryParams.subscribe(
@@ -140,6 +142,8 @@ export class botsubcategoryComponent implements OnInit {
         
         this.botsubcategoryname = res[0].sub_category_name;
         this.englishName = res[0].sub_category_name_english;
+        this.header = res[0].header;
+        this.headerE = res[0].headerE;
         this.deletable = res[0].delete;
         this.has_sub = res[0].has_sub;
         this.has_question = res[0].has_question;
@@ -153,7 +157,7 @@ export class botsubcategoryComponent implements OnInit {
   initForm() {
     this.createForm = this.fb.group({
       name: new FormControl(null, Validators.compose([Validators.required])),
-      englishname: new FormControl(null)
+      englishname: new FormControl(null),
     })
     this.updateForm = this.fb.group({
       name: new FormControl(null, Validators.compose([Validators.required])),
@@ -162,6 +166,8 @@ export class botsubcategoryComponent implements OnInit {
     })
     this.editMainForm = this.fb.group({
       englishname: new FormControl(null),
+      header: new FormControl(null),
+      headerE: new FormControl(null),
       name: new FormControl(null, Validators.compose([Validators.required])),
       id: new FormControl(null, Validators.compose([Validators.required])),
     })
@@ -186,13 +192,13 @@ export class botsubcategoryComponent implements OnInit {
     this.addZForm = this.fb.group({
       id: new FormControl(null),
       name: new FormControl(null, Validators.compose([Validators.required])),
-      link: new FormControl(null, Validators.compose([Validators.required])),
+      link: new FormControl(null),
       nameenglish: new FormControl(null),
     })
     this.editZForm = this.fb.group({
       id: new FormControl(this.id),
       name: new FormControl(null, Validators.compose([Validators.required])),
-      link: new FormControl(null, Validators.compose([Validators.required])),
+      link: new FormControl(null),
       nameenglish: new FormControl(null),
     })
     this.editQForm = this.fb.group({
@@ -321,6 +327,8 @@ export class botsubcategoryComponent implements OnInit {
           this.notifySuccess("Successfully Edited");
           this.botsubcategoryname = this.editMainForm.value.name;
           this.englishName = this.editMainForm.value.englishname;
+          this.header = this.editMainForm.value.header;
+          this.headerE = this.editMainForm.value.headerE;
           this.closeModal();
       });
   }
@@ -391,6 +399,8 @@ export class botsubcategoryComponent implements OnInit {
       this.editMainForm.controls.id.setValue(this.id)
       this.editMainForm.controls.name.setValue(this.botsubcategoryname)
       this.editMainForm.controls.englishname.setValue(this.englishName)
+      this.editMainForm.controls.header.setValue(this.header)
+      this.editMainForm.controls.headerE.setValue(this.headerE)
       this.modal = this.modalService.show(
         modalRef, this.modalConfig
       );
@@ -431,7 +441,7 @@ openQModal(modalRef: TemplateRef<any>,opr,row) {
 editQModal2(modalRef: TemplateRef<any>,row) {
   this.row = row;
       this.editQForm.controls.id.setValue(row.id);
-      this.editQForm.controls.first.setValue(row.first);
+      this.editQForm.controls.first.setValue(row.first == 1? true : false);
       this.editQForm.controls.question.setValue(row.question);
       this.editQForm.controls.questionenglish.setValue(row.question_english);
       this.editQForm.controls.buttonname.setValue(row.button);

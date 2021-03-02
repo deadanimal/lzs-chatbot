@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { ServicesService } from 'src/app/shared/services/services/service.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
@@ -12,6 +12,8 @@ export class ChatComponent implements OnInit {
 
   private firstMessage: number = 1;
   private userId: number;
+  public username: string;
+  public userlanguage: string;
   private scrolled: number = 0;
   public themessages: {}[] = [];
   public agentinterval: any;
@@ -20,9 +22,16 @@ export class ChatComponent implements OnInit {
 
   constructor(private authService: AuthService,
     private ServicesService: ServicesService,  
-    private router: Router
-
-    ) { }
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+    ) { 
+      this.activatedRoute.queryParams.subscribe(
+        (path: any) => {
+          this.username = path['name'];
+          this.userlanguage = path['language'];
+        }
+      )
+    }
 
   ngOnInit() {
   }
@@ -46,7 +55,7 @@ export class ChatComponent implements OnInit {
       this.firstMessage = 0;
       //send initial message
       this.ServicesService.sendClientChat(value,"").subscribe(
-        (res) => {  
+        (res) => {          
           this.userId = res;        
         });
      (<HTMLInputElement>document.getElementById("msgArea")).value = "";
@@ -72,7 +81,7 @@ export class ChatComponent implements OnInit {
             this.themessages.push(res);
           }       
         });
-    },2000);
+    },4000);
   }
 
   scrollBottom(){

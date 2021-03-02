@@ -107,6 +107,11 @@ class BotSubcategoryController extends Controller
         $subid = $bot_category->sub_category_id;
         if ($bot_category->has_sub == 1){
             $this->deleteOthers($bot_category);
+        }else{
+            $q = BotQuestion::where("category_id",$bot_category->id)->get();
+            if (count($q)>0){
+                BotQuestion::where("category_id",$bot_category->id)->delete();
+            }
         }
         $bot_category->delete();  
         $audit_c = new AuditController(); 
@@ -281,8 +286,10 @@ class BotSubcategoryController extends Controller
         $bot_category = BotSubCategory::find($request->id);
         $bot_category->sub_category_name = $request->name;
         $bot_category->sub_category_name_english = $request->englishname;
+        $bot_category->header = $request->header;
+        $bot_category->headerE = $request->headerE;
         $bot_category->save();
-        $audit_c = new AuditController(); 
+        $audit_c = new AuditController();
         $audit_c->addAudit("update","update sub category(id: {$bot_category->id})");
         return response()->json("success",200);
     } 
