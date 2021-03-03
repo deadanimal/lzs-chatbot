@@ -22,10 +22,10 @@ spec:
       paths:
       - backend:
           serviceName: lzs-chatbot-chat
-          servicePort: 5100    
+          servicePort: 80    
   - host: lzs-chatbot-admin.pipe.my
     http:
       paths:
       - backend:
           serviceName: lzs-chatbot-webapp
-          servicePort: 80
+          servicePort: 4200
