@@ -3,24 +3,24 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    name: mbpp-elatihan-webapp
-  name: mbpp-elatihan-webapp
+    name: lzs-chatbot-webapp
+  name: lzs-chatbot-webapp
 spec:
   progressDeadlineSeconds: 2147483647
   replicas: 1
   selector:
     matchLabels:
-      app: mbpp-elatihan-webapp
+      app: lzs-chatbot-webapp
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: mbpp-elatihan-webapp
+        app: lzs-chatbot-webapp
     spec:
       containers:
-      - image: syafiqpipe/mbpp-elatihan-webapp:latest
+      - image: syafiqpipe/lzs-chatbot-webapp:1.0.1
         imagePullPolicy: Always   
-        name: mbpp-elatihan-webapp
+        name: lzs-chatbot-webapp
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File

@@ -4,20 +4,20 @@ metadata:
   name: lzs-chatbot-my-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "lzs-chatbot-my-prod"
+    cert-manager.io/cluster-issuer: "lzs-chatbot-prod"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.org/client-max-body-size: "10m"
 spec:
   tls:
   - hosts:
-    - lzs-chatbot.pipe.my
+    - chatbot.zakatselangor.com.my
     - lzs-chatbot-admin.pipe.my
 
     secretName: lzs-chatbot-my-prod
 
   rules:
-  - host: lzs-chatbot.pipe.my
+  - host: chatbot.zakatselangor.com.my
     http:
       paths:
       - backend:
@@ -28,4 +28,4 @@ spec:
       paths:
       - backend:
           serviceName: lzs-chatbot-webapp
-          servicePort: 4200
+          servicePort: 80

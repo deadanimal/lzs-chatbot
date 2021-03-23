@@ -147,7 +147,7 @@ new Vue({
                 //console.log("testsets");
             }else{
                 if (vm.star == ""){
-                     axios.post('/public/sendmsg',{'id': id,'message': message,'agentId': vm.agentid}).then(function (response) {
+                     axios.post('/sendmsg',{'id': id,'message': message,'agentId': vm.agentid}).then(function (response) {
                     
                     });
                  }
@@ -182,7 +182,7 @@ new Vue({
 
             vm.fbk = fbk;
             
-            axios.post('/public/giveFeedback',{'userId': id,'fbk': vm.fbk,'star': vm.star})
+            axios.post('/giveFeedback',{'userId': id,'fbk': vm.fbk,'star': vm.star})
               .then(function (response) {
                   //console.log(response);
                     if (response.data[1].stat == "ok"){
@@ -205,7 +205,7 @@ new Vue({
             
             if (vm.doneRead == 1){
                 vm.doneRead = 0;
-            axios.get('/public/getclientmsg?id=' + id)
+            axios.get('/getclientmsg?id=' + id)
               .then(function (response) {
                 //console.log(response);
                 // handle success

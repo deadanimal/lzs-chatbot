@@ -42,6 +42,7 @@ class OnboardingConversation extends Conversation
     protected $nlpCategories = [];
     protected $conversationId;
     protected $iteration = 1; //remove this later
+    protected $statementTag = "No. KP Baru:";
 
     public function run()
     {
@@ -88,24 +89,37 @@ class OnboardingConversation extends Conversation
     protected function beforeMainMenu(){
         $c = DB::table("toggle_notification")->where("id",1)->first();
 
-        if ($c->on_off == 1){ 
+  
             
             if ($this->language == "English"){
 
+                if ($c->on_off == 1){ 
                   $beforeMainQuestion = Question::create('Please Select One')
-            ->addButton(Button::create("Main Categories")->value("Main Categories"))
-            ->addButton(Button::create("Check Payment Record")->value("Check Payment Record"))
-            ->addButton(Button::create("Check Aid Record")->value("Check Aid Record"))
-            ->addButton(Button::create("Live Chat")->value("Live Chat"));
+                    ->addButton(Button::create("Main Categories")->value("Main Categories"))
+                    ->addButton(Button::create("Check Payment Record")->value("Check Payment Record"))
+                    ->addButton(Button::create("Check Aid Record")->value("Check Aid Record"))
+                    ->addButton(Button::create("Live Chat")->value("Live Chat"));
+                }else{
+                    $beforeMainQuestion = Question::create('Please Select One')
+                    ->addButton(Button::create("Main Categories")->value("Main Categories"))
+                    ->addButton(Button::create("Check Payment Record")->value("Check Payment Record"))
+                    ->addButton(Button::create("Check Aid Record")->value("Check Aid Record"));
+                    
+                }
 
             }else{
-            
-                $beforeMainQuestion = Question::create('Klik Salah Satu')
-            ->addButton(Button::create("Kategori Utama")->value("Kategori Utama"))
-            ->addButton(Button::create("Semak Rekod Bayaran")->value("Semak Rekod Bayaran"))
-            ->addButton(Button::create("Semak Status Bantuan")->value("Semak Status Bantuan"))
-            ->addButton(Button::create("Live Chat")->value("Live Chat"));
-
+                if ($c->on_off == 1){ 
+                        $beforeMainQuestion = Question::create('Klik Salah Satu')
+                    ->addButton(Button::create("Kategori Utama")->value("Kategori Utama"))
+                    ->addButton(Button::create("Semak Rekod Bayaran")->value("Semak Rekod Bayaran"))
+                    ->addButton(Button::create("Semak Status Bantuan")->value("Semak Status Bantuan"))
+                    ->addButton(Button::create("Live Chat")->value("Live Chat"));
+                }else{
+                    $beforeMainQuestion = Question::create('Klik Salah Satu')
+                    ->addButton(Button::create("Kategori Utama")->value("Kategori Utama"))
+                    ->addButton(Button::create("Semak Rekod Bayaran")->value("Semak Rekod Bayaran"))
+                    ->addButton(Button::create("Semak Status Bantuan")->value("Semak Status Bantuan"));                   
+                }
             }          
 
             $this->createMessageDB("Kategori Utama,Live Chat");
@@ -157,10 +171,10 @@ class OnboardingConversation extends Conversation
                             }  
                     }
                 });
-            
-        }else{
-            $this->askMainMenu();
-        }
+        
+        // }else{
+        //     $this->askMainMenu();
+        // }
     }
     protected function fakeinsert(){
         $record = new Customer();
@@ -417,9 +431,7 @@ class OnboardingConversation extends Conversation
         //take main categories from the database
         $main_categories = DB::table('bot_category')->get();
 
-        // foreach ($otherMenus as $key => $value) {
-        //     $mainQuestion->addButton(Button::create($value->name)->value($value->name));
-        // }
+     
         $message = "";
 
         if ($this->language == "Bahasa Malaysia"){
@@ -472,12 +484,7 @@ class OnboardingConversation extends Conversation
             }
   
             else{
-                // if ($this->language == "Bahasa Malaysia"){
-                //     $this->say("Maaf,saya tidak faham. Sila cuba menu di bawah");
-                // }else{
-                //     $this->say("Sorry, I couldn't understand. Please Try Options Below");           
-                // }
-                // return $this->repeat();
+    
                 $this->allowNLP($answer);
             }           
         });
@@ -506,13 +513,7 @@ class OnboardingConversation extends Conversation
                   //check if got a request on hold
                   $requestOnHold = liveChatNotification::where("waiting",0)->first();
                   if ($requestOnHold){
-                      // $live_chat = new liveChatNotification();
-                      // $live_chat->userid = $this->userId;
-                      // $live_chat->language = $this->language;
-                      // $live_chat->waiting = 1;
-                      // $live_chat->who = "admin"; 
-                      // $live_chat->save();
-                      //update customer when transfered
+           
                       $total = liveChatNotification::all();
                       $posi = count($total) + 1;
                       $c = Customer::find($this->userId);
@@ -521,7 +522,7 @@ class OnboardingConversation extends Conversation
                       $c->save();
                       $question = Question::create('Klik Butang Di Bawah');
                       $message = "Masuk Live Chat";
-                      $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+                      $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/client?id=" . $c->channelId]));
   
                       $this->createMessageDB($message);
                       $this->ask($question, function ($answer) use ($posi){
@@ -552,15 +553,7 @@ class OnboardingConversation extends Conversation
                               return $this->repeat();
                         }
                       });
-                      // //$ready = 0;
-                      // $this->ask("Sila tunggu untuk ejen kami respon....", function ($answer){
-                      //     Event::listen($this->userId . ".agentmsg", function($m)
-                      //     {
-                      //         var_dump("ff");
-                      //         $this->timeToChat($m);                
-                      //     });
-                      //     return $this->repeat();                       
-                      // });
+        
                   }else{
   
                       $c = Customer::find($this->userId);
@@ -570,15 +563,12 @@ class OnboardingConversation extends Conversation
   
                       $question = Question::create('Klik Butang Di Bawah');
                       $message = "Masuk Live Chat";
-                      $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+                      $question->addButton(Button::create("Masuk Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/client?id=" . $c->channelId]));
   
                       $this->createMessageDB($message);
                       $this->ask($question, function ($answer){
                           if($answer->isInteractiveMessageReply()){
-                              // $c = Customer::find($this->userId);
-                              // $c->transferTime = new DateTime();
-                              // $c->channelId = rand(1000,9999) . $this->userId . rand(1000,9999);
-                              // $c->save();                            
+                                                 
                               $live_chat = new liveChatNotification();
                               $live_chat->userid = $this->userId;
                               $live_chat->language = $this->language;
@@ -595,24 +585,6 @@ class OnboardingConversation extends Conversation
                               return $this->repeat();
                           }
                       });
-  
-                      // $this->say("Sila tunggu untuk ejen kami respon....");
-                      //$this->timeToChat();
-                      //sleep(10);
-                      //$c = ConversationId::where("clientid",$this->userId)->where("receipent","client")->first();
-                      //var_dump($c->message);
-                      // while ($ready == 0) {
-                      //     if ($first != 1){
-                      //         $this->say("Sila tunggu untuk ejen kami respon....");
-                      //         $first = 1;
-                      //     }
-                          
-                        
-                      //     if (isset($c[0])){
-                      //         $ready = 1;
-                      //         $this->bot->startConversation(new AgentConversation);
-                      //     }                        
-                      // }
                   
               }
               }else{
@@ -624,17 +596,7 @@ class OnboardingConversation extends Conversation
                   $this->askMainMenu();
               }
               
-              // $finish = 0;
-              // while ($finish == 0) {
-              //    sleep(2);
-              //    $f = db::table('customer')->where("userid",$d)->get();
-              //    if (count($f) != 0){
-              //       // var_dump($f);
-              //        $this->say($f[0]->message);
-              //        $finish = 1;
-              //    }
-              // }
-          /////////////THIS FOR TRANSFER TO AGENT////////////////
+      
         }else{
         
              $foundz = 0;
@@ -665,7 +627,7 @@ class OnboardingConversation extends Conversation
                       $c->save();
                       $question = Question::create('Please Click The Button Below');
                       $message = "Masuk Live Chat";
-                      $question->addButton(Button::create("Join Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+                      $question->addButton(Button::create("Join Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/client?id=" . $c->channelId]));
   
                       $this->createMessageDB($message);
                       $this->ask($question, function ($answer) use ($posi){
@@ -706,7 +668,7 @@ class OnboardingConversation extends Conversation
     
                         $question = Question::create('Please Click The Button Below');
                         $message = "Join Live Chat";
-                        $question->addButton(Button::create("Join Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/public/client?id=" . $c->channelId]));
+                        $question->addButton(Button::create("Join Live Chat")->value("Masuk Live Chat")->additionalParameters(["link"=>"/client?id=" . $c->channelId]));
     
                         $this->createMessageDB($message);
                         $this->ask($question, function ($answer){
@@ -1162,7 +1124,7 @@ class OnboardingConversation extends Conversation
         if ($this->language == "Bahasa Malaysia"){
             if ($subid == 168){
                 $this->ask("Sila masukkan nombor pendaftaran syarikat anda", function ($answer) use ($subid,$id) {
-                   
+                        $this->statementTag = "No. Pendaftaran Syarikat: ";
                         $question = (object)["category_id"=>$subid,"subcategory"=>$subid];
                         $this->callApi($id,$answer->getText(),$question);
     
@@ -1238,11 +1200,10 @@ class OnboardingConversation extends Conversation
 
                                     if ($value->id == 168){
                                         $this->ask("Sila masukkan nombor pendaftaran syarikat anda", function ($answer) use ($value,$question){
-                                            if (is_numeric($answer->getText()) === true){
+                                            
+                                            $this->statementTag = "No. Pendaftaran Syarikat: ";
                                                 $this->callApi(1,$answer->getText(),$question);
-                                            }else{
-                                                return $this->repeat();
-                                            }
+                                 
 
                                         });
                                     }else{
@@ -1322,11 +1283,9 @@ class OnboardingConversation extends Conversation
 
                             if ($value->id == 168){
                                 $this->ask("Sila masukkan nombor pendaftaran syarikat anda", function ($answer) use ($value,$question){
-                                    if (is_numeric($answer->getText()) === true){
+                                    $this->statementTag = "No. Pendaftaran Syarikat: ";
                                         $this->callApi(1,$answer->getText(),$question);
-                                    }else{
-                                        return $this->repeat();
-                                    }
+                                
                                 });
                             }else{
                                     $this->ask("Sila masukkan nombor myKad anda (tanpa '-')", function ($answer) use ($value,$question){
@@ -1600,7 +1559,7 @@ class OnboardingConversation extends Conversation
                                                     ";
                         
                                                     $pdfwriter->WriteHTML('<center style="text-align: center;">
-                                                    <img style="width:50%" src="' . url('/') . '/zakat-sel-logo.png' . '">' 
+                                                    <img style="width:30%" src="' . url('/zakat-sel-logo.png') . '">' 
                                                     . '</center>
                                                     <center style="text-align: center;">
                                                     <b style="font-size: 18px;">Penyata Maklumat Bayaran Zakat</b>
@@ -1609,10 +1568,12 @@ class OnboardingConversation extends Conversation
                         
                                                     <u style="text-align: left;font-size: 15px;"><b>Maklumat Pembayar:</b></u>
                                                     <p style="text-align: left;font-size: 13px;">' . $respon2['nama'] . '</p>
-                                                    <p style="text-align: left;font-size: 14px;">' . 'No. KP Baru: ' . $respon2['mykad'] . '</p>
-                                                    <br><br>
+                                                    <p style="text-align: left;font-size: 14px;">' . $this->statementTag . $respon2['mykad'] . '</p>                        
+                                                    <p style="text-align: left;font-size: 15px;"><b>' . 'Alamat: ' . '</b></p>                                                     
+                                                    <p style="text-align: left;font-size: 13px;">' . $respon2['alamat1'] . '</p><p style="text-align: left;font-size: 13px;">' . $respon2['alamat2'] . '</p>    
+                                                    <p style="text-align: left;font-size: 13px;">' . $respon2['alamat3'] . ' ' . $respon2['poskod'] . ' ' . $respon2['daerah'] . '</p><br>
                                                     <u style="text-align: left;font-size: 15px;"><b>Maklumat Bayaran Zakat:</b></u>
-                                                    <br><br> 
+                                                    <br><br>
                                                     <table autosize="1">
                                                     <tr>
                                                     <th style="width: 5cm;border-bottom: 1px solid;">TARIKH</th>
@@ -1625,8 +1586,8 @@ class OnboardingConversation extends Conversation
                                                     $qq = Question::create('Klik Di Sini')->addButton(Button::create('Lihat Penyata Zakat')->value('Muat Turun Penyata Zakat')->additionalParameters(["link"=>url('/') . '/' . $mykadNum . $this->userId . $respon['recordGUID'] . "-penyata.pdf"]));
 
                                                     $this->ask($qq, function($answer) use ($question){
-                                                        //unlink($thepath);
-                                                        $this->getEndingMenu($question);
+                                                        $this->statementTag = "No. KP Baru: ";
+                                                        $this->getEndingMenu($question);                                                        
 
                                                     });
                                             }
@@ -1641,37 +1602,6 @@ class OnboardingConversation extends Conversation
                         });
                     
                     }else{
-                    
-                        // $first = rand(2003,$respon['question'][0]["answer3"]-1);
-                        // $second = rand(2003,$respon['question'][0]["answer3"]-1);
-                        // $third = rand(2003,$respon['question'][0]["answer3"]-1);
-
-                        // if ($position == 1){
-                        //     $thequestion = Question::create($respon['question'][0]["answer3"] )
-                        //     ->addButton(Button::create($respon['question'][0]["answer3"])->value($respon['question'][0]["answer3"]))
-                        //     ->addButton(Button::create($first)->value($first))
-                        //     ->addButton(Button::create($second)->value($second))
-                        //     ->addButton(Button::create($third)->value($third));
-                        // }
-                        // else if ($position == 2){
-                        //     $thequestion = Question::create($respon['question'][0]["answer3"] )
-                        //     ->addButton(Button::create($first)->value($first))
-                        //     ->addButton(Button::create($respon['question'][0]["answer3"])->value($respon['question'][0]["answer3"]))
-                        //     ->addButton(Button::create($second)->value($second))
-                        //     ->addButton(Button::create($third)->value($third));
-                        // }else if ($position == 3){
-                        //     $thequestion = Question::create($respon['question'][0]["answer3"] )
-                        //     ->addButton(Button::create($first)->value($first))
-                        //     ->addButton(Button::create($second)->value($second))
-                        //     ->addButton(Button::create($respon['question'][0]["answer3"])->value($respon['question'][0]["answer3"]))
-                        //     ->addButton(Button::create($third)->value($third));
-                        // }else{
-                        //     $thequestion = Question::create($respon['question'][0]["answer3"] )
-                        //     ->addButton(Button::create($first)->value($first))
-                        //     ->addButton(Button::create($second)->value($second))
-                        //     ->addButton(Button::create($third)->value($third))
-                        //     ->addButton(Button::create($respon['question'][0]["answer3"])->value($respon['question'][0]["answer3"]));
-                        // }
 
                         $thequestion = Question::create($respon['question'][0]["question3"] )
                             ->addButton(Button::create("YA")->value("YA"))
@@ -1747,7 +1677,7 @@ class OnboardingConversation extends Conversation
                                             ";                           ;
                 
                                             $pdfwriter->WriteHTML('<center style="text-align: center;">
-                                            <img style="width:50%" src="' . url('/') . '/zakat-sel-logo.png' . '">' 
+                                            <img style="width:30%" src="' . url('/zakat-sel-logo.png') . '">' 
                                             . '</center>
                                             <center style="text-align: center;">
                                             <b style="font-size: 18px;">Penyata Maklumat Rekod Bantuan</b>
@@ -1757,7 +1687,9 @@ class OnboardingConversation extends Conversation
                                             <u style="text-align: left;font-size: 15px;"><b>Maklumat Pemohon:</b></u>
                                             <p style="text-align: left;font-size: 13px;">' . $respon2['nama'] . '</p>
                                             <p style="text-align: left;font-size: 14px;">' . 'No. KP Baru: ' . $respon2['mykad'] . '</p>
-                                            <br><br>
+                                            <p style="text-align: left;font-size: 13px;">' . 'Alamat: ' . '</p>                                                     
+                                            <p style="text-align: left;font-size: 13px;">' . $respon2['alamat1'] . '</p><p style="text-align: left;font-size: 13px;">' . $respon2['alamat2'] . '</p>    
+                                            <p style="text-align: left;font-size: 13px;">' . $respon2['alamat3'] . ' ' . $respon2['poskod'] . ' ' . $respon2['daerah'] . '</p><br>
                                             <u style="text-align: left;font-size: 15px;"><b>Maklumat Bantuan:</b></u>
                                             <br><br> 
                                             <table autosize="1">

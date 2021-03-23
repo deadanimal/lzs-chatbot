@@ -6,106 +6,6 @@
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
     </head>
     <body>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
-    <h1 class="">Testing</h1>
     </body>
   
     <script>
@@ -115,7 +15,7 @@
             introMessage: "✋ Assalamualaikum, saya Jannah, chatbot yang akan membantu anda untuk sesi Q&A pada hari ini.<br><br> Makluman Waktu Operasi<br><br> Chatbot LZS : 24 jam (Isnin - Ahad) <br><br> Live Chat : 8.30 pagi - 4.30 petang (Isnin - Jumaat kecuali cuti umum) <br><br><br><br>" + "<button class=\"primary\" onclick='window.open(\"https://www.zakatselangor.com.my/notis-privasi/\")'>Notis Privasi (klik sini)</button>" +  "<br><br> Dengan memberikan data peribadi saya, saya dengan ini menyatakan bahawa saya telah membaca, memahami dan bersetuju dengan terma <a onclick='window.open('https://www.zakatselangor.com.my/notis-privasi/')'>Notis Privasi</a> daripada Lembaga Zakat Selangor",
             aboutText: "",
             title: "Your Assistant",
-            bubbleAvatarUrl: '/public/muslimwoman.png',
+            bubbleAvatarUrl: '/muslimwoman.png',
             mainColor: '#005AAB',
             headerTextColor: '#FFFFFF',
             backgroundImage: '',

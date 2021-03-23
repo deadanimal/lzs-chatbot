@@ -219,9 +219,9 @@ class LiveChatController extends Controller
             $altC->message = $lasm;
             $altC->save();
             return response()->json(["status"=>"success"]);
-        }else{
-            return response()->json(["status"=>"accepted"]);
-        } 
-       
+        }
+        // else{
+        //     return response()->json(["status"=>"accepted"]);
+        // }             
     }
 }
