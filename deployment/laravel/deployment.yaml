@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: lzs-chatbot-chat
-        image: syafiqpipe/lzs-chatbot-chat:1.0.0
+        image: syafiqpipe/lzs-chatbot-chat:1.0.8
         imagePullPolicy: Always
         ports:
-        - containerPort: 5100
+        - containerPort: 80
         env:
         - name: DATABASE_URL
           value: postgresql://api:uhhxlcjuscps90wf@project-do-user-812878-0.a.db.ondigitalocean.com:25060/lzs-chatbot?sslmode=require
