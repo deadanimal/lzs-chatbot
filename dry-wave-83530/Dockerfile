@@ -65,8 +65,6 @@ RUN touch /var/log/cron.log
 # Run the command on container startup
 CMD printenv > /etc/environment && echo "cron starting..." && (cron) && : > /var/log/cron.log && tail -f /var/log/cron.log
 
-# Root: /var/spool/cron/crontabs/root
-
 # Ensure the entrypoint file can be run
 RUN chmod +x /var/www/tmp/docker-entrypoint.sh
 ENTRYPOINT ["/var/www/tmp/docker-entrypoint.sh"]
