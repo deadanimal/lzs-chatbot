@@ -215,7 +215,7 @@ class OnboardingConversation extends Conversation
                         $u->lasttime = new DateTime();
                         $ur->feedback = $answer->getText();   
                         $ur->save();
-                        $this->say("Sekian, Terima Kasih. Harap saya dapat bantu anda.");
+                        $this->say("Sekian, Terima Kasih. Harap saya dapat memudahkan urusan anda.");
                         return true;     
                     });                     
                    
