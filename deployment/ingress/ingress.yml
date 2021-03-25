@@ -8,6 +8,9 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.org/client-max-body-size: "10m"
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    ingress.kubernetes.io/tls-minimum-version: "1.2"
+
 spec:
   tls:
   - hosts:
