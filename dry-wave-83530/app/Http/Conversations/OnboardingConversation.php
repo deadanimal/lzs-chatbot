@@ -1354,7 +1354,6 @@ class OnboardingConversation extends Conversation
             
             if ($foundornot === FALSE || $foundornot === NULL){
 
-
             if ($id == 1){
                 $response = Http::asForm()->post($mykadvalidationlink[0]->value,[
                     'mykad' => $mykadNum,
