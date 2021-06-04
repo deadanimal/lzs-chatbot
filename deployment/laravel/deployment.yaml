@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: lzs-chatbot-chat
-        image: syafiqpipe/lzs-chatbot-chat:1.0.9
+        image: afizihusaini/lzs-chatbot-chat:1.1.2
         imagePullPolicy: Always
         ports:
         - containerPort: 80
